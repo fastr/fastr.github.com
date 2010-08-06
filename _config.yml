@@ -1,0 +1,4 @@
+destination: /var/www/ajs_secret_dir
+pygments: true
+markdown: rdiscount
+exclude: mkpost
