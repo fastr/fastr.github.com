@@ -17,77 +17,153 @@ Feed in an array of registers with values, get a printout of success / error.
 Script
 ======
 
-`read_reg.js`
+`devreg.js`
 
     #!/usr/bin/env node
-    var sys   = require('sys'),
+    var g_registers = {},
+        sys   = require('sys'),
         exec  = require('child_process').exec,
-        ccdc  = require('ccdc').ccdc,
+        ccdc  = require('./ccdc').ccdc,
+        settings = require('./settings').settings,
         child;
 
-    function devmem(key, hexaddr, size_type, value) {
-      var bits = ccdc.bits[key],
-      k, // key
+    // TODO: put in the 'Zen' enumerate functions, not magic parameters
+    function leadWith(string, len, char) {
+      char = ('undefined' !== typeof char) ? char : ' ';
+      string = string || '';
+      string = '' + string;
+      while (string.length < len) {
+        string = char + string;
+      }
+      return string;
+    }
+
+    function trailWith(string, len, char) {
+      char = ('undefined' !== typeof char) ? char : ' ';
+      string = string || '';
+      string = '' + string;
+      while (string.length < len) {
+        string += char;
+      }
+      return string;
+    }
+
+    function print_nibbles(reg_name, value) {
+      var bits = ccdc.bits[reg_name],
+        bit_name,
+        bit,
+        shift,
+        len,
+        bin;
+
+      //sys.print(bits + ' ' + reg_name + ' ' + value);
+      sys.print("\n");
+      sys.print(leadWith('', 22, ' ') + leadWith('-', 12+8+8, '-') + "\n");
+      for (bit_name in bits) {
+        if (!bits.hasOwnProperty(bit_name)) return;
+
+        shift = bits[bit_name];
+
+        bit_name = trailWith(bit_name + ' [' + shift.join(':') + '] ', 20);
+        len = shift[1] && 1 + shift[1] - shift[0] || 1;
+
+        bin = leadWith(value.toString(2), 32, '0');
+        nibble = bin.substr(shift[0], len);
+
+        //sys.print('  ' + bit_name + ' bin' + bin + 'shift:' + shift.join(',') + ' ' + len + ' nib:' + nibble + "\n");
+
+        hex = leadWith(parseInt(nibble, 2).toString(16), 8, '0');
+        dec = parseInt(nibble, 2).toString(10);
+
+        sys.print('  ' + bit_name + " 0x" + hex + " == " + dec + "\n");
+      }
+      sys.print(leadWith('', 22, ' ') + leadWith('-', 12+8+8, '-') + "\n");
+      sys.print("\n\n");
+    }
+
+    function print_registers() {
+      var reg_name,
+        value,
+        dec, // decimal
+        hex,
+        bin;
+
+      for (reg_name in g_registers) {
+        if (!g_registers.hasOwnProperty(reg_name)) return;
+
+        value = g_registers[reg_name];
+        dec = leadWith(value.toString(10), 12, '0');
+        hex = leadWith(value.toString(16), 8, '0');
+        bin = leadWith(value.toString(2), 32, '0');
+        
+        key = trailWith(reg_name + ':', 20);
+        sys.print(key.toUpperCase() + '   0x' + hex + ' == ' + dec + ' | 0b' + bin + "\n");
+        print_nibbles(reg_name, value);
+      }
+    }
+
+    function write_settings() {
+      var bits,
+        reg_name,
+        value;
+
+      //sys.print( ' ' + JSON.stringify(settings) + "\n");
+
+      for (reg_name in settings) {
+        if (!settings.hasOwnProperty(reg_name)) return;
+        if (!g_registers.hasOwnProperty(reg_name)) throw new Exception("'" + k + "' isn't a known register");
+        value = settings[reg_name];
+        
+        if ('number' == typeof value) {
+          // awesome
+        } else if ('string' == typeof value) {
+          value = value.toLowerCase();
+          if (0 === value.indexOf('0x')) {
+            value = parseInt(value.substr(2), 16);
+          } else if (0 === value.indexOf('0b')) {
+            value = parseInt(value.substr(2), 2);
+          } else {
+            value = parseInt(value, 10);
+          }
+        } else if ('object' == typeof value) {
+          throw new Exception('hashmaps of bits for writing Not supported yet');
+        } else {
+          throw new Exception('values in settings should be in the form "0x00000000", "0b00000000", decimal, or key/value pairs of bits');
+        }
+
+        devmem(reg_name, '0x' + value.toString(16), 'u32');
+      }
+    }
+
+    // TODO platform abstract and move to devmem.js
+    function devmem(reg_name, hex_value, size) {
+      var k, // key
       v, // value
+      hexaddr = (ccdc.base_addr.substr(0, 8) + ccdc.registers[reg_name].substr(2)),
       hex,
       bin,
       dec;
 
-      exec('devmem2 ' + hexaddr + ' w | grep : | cut -d":" -f2', function (error, stdout, stderr) {
-      stdout = stdout.substr(3); // removing leading ' 0x'
-      dec = parseInt(stdout, 16);
-      hex = dec.toString(16);
-      bin = dec.toString(2);
-      stdout = '' + stdout;
+      hex_value = ('undefined' !== typeof hex_value) ? hex_value : '';
+      exec('devmem2 ' + hexaddr + ' w ' + hex_value + ' | grep : | cut -d":" -f2', function (error, stdout, stderr) {
+      	//sys.print('devmem2 ' + hexaddr + ' w ' + hex_value + ' | grep : | cut -d":" -f2' + "\n");
 
-      while (hex.length < 8) {
-        hex = '0' + hex;
-      }
-      while (dec.length < 12) {
-        dec = '0' + dec;
-      }
-      while (bin.length < 32) {
-        bin = '0' + bin;
-      }
-      key += ':';
-      while (key.length < 20) {
-        key += ' ';
-      }
-
-      sys.print(key.toUpperCase() + ' 0x' + hex + ' 0b' + bin + "\n");
-
-      for (k in bits) {
-        if (!bits.hasOwnProperty(k)) return;
-        v = bits[k];
-        k += ':';
-        while (k.length < 20) {
-          k += ' ';
+        if (stderr) {
+          sys.print('stderr: ' + stderr);
+          throw new Exception('yipes');
         }
-        var len, bit;
-        if ('undefined' == typeof v[1]) {
-         len = (v[1] - v[0]) + 1;
-        } else {
-         len = 1;
-        }
-        bit = bin.substr(v[0],v[1] && v[1]-v[0]+1 ||1);
-        hex = '' + parseInt(bit, 2).toString(16);
-        dec = '' + parseInt(bit, 2).toString(10);
-        while (hex.length < 8) {
-          hex = '0' + hex;
-        }
-        sys.print("\t" + k + " 0x" + hex + " 0d" + dec + "\n");
-      }
 
-      sys.print("\n\n");
+        if (error !== null) {
+          console.log('exec error: ' + error);
+        }
 
-      //sys.print(key + ': ' + stderr);
-      if (error !== null) {
-        console.log('exec error: ' + error);
-      }
-      // TODO breakdown register values
+        // TODO handle other formats?
+        stdout = stdout.substr(3); // removing leading ' 0x'
+        dec = parseInt(stdout, 16);
+        g_registers[reg_name] = dec;
       });
     }
-    
+
     function main() {
       var key, value, hexaddr;
       hexaddr = ccdc.base_addr.substr(0, 8);
@@ -97,13 +173,73 @@ Script
         if (!ccdc.registers.hasOwnProperty(key)) return;
         value = ccdc.registers[key];
         //sys.print(key + ": " + value.substr(2) + "\n");
-        devmem(key, hexaddr + value.substr(2));
+        devmem(key);
+      }
+      // TODO implement Futures.promise();
+      setTimeout(function () {
+        //print_registers();
+        write_settings();
+        print_registers();
+      }, 2000);
+    }
+
+    main();
+
+`settings.js`
+
+    // TODO allow setting of user values
+    // will be checked
+    // registers can be set with decimal, hex, or binary value
+    exports.settings = {
+      "registers" : {
+        "pid": 0, // these types are implemented
+        "pcr": 0x0,
+        "syn_mode": 0b0, 
+        "hd_vd_wid": { // Not implemented
+          "reserved": 0,
+          "hdw": 0x0,
+          "reserved": 0b0,
+          "vdw": 0
+        },
+        "pix_lines": 1,
+        "horz_info": 1,
+        "vert_start": 1,
+        "vert_lines": 1,
+        "culling": 1,
+        "hsize_off": 1,
+        "sdofst": 1,
+        "sdr_addr": 1,
+        "clamp": 1,
+        "dcsub": 1,
+        "colptn": 1,
+        "blkcmp": 1,
+        "fpc": 1,
+        "fpc_addr": 1,
+        "vdint": 1,
+        "alaw": 1,
+        "rec656if": 1,
+        "cfg": 1,
+        "fmtcfg": 1,
+        "fmt_horz": 1,
+        "fmt_vert": 1,
+        "fmt_addr_i": 1,
+        "prgeven0": 1,
+        "prgeven1": 1,
+        "prgodd0": 1,
+        "prgodd1": 1,
+        "vp_out": 1,
+        "lsc_config": 1,
+        "lsc_initial": 1,
+        "lsc_table_base": 1,
+        "lsc_table_offset": 1
       }
     }
 
 
 `ccdc.js`
 
+    // TODO add reset values as to be able 
+    // to check for hardware bugs as well
     var ccdc = {
       "base_addr" : "0x480BC600",
       "registers" : {
