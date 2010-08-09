@@ -10,7 +10,7 @@ Goal
 
 [Install Jekyll](http://blog.envylabs.com/2009/08/publishing-a-blog-with-github-pages-and-jekyll/) to use for writing documentation in Markdown syntax with code highlighting.
 
-Create a site which has a list of article categories. See [example](http://github.com/qrush/litanyagainstfear)
+Create a site which has a list of article categories. See [example](http://fastr.github.com/)
 
 Putting Jekyll to Good Use
 =========
@@ -22,7 +22,11 @@ As per the [documentation](http://wiki.github.com/mojombo/jekyll/install)
 
     sudo gem install jekyll
     sudo gem install rdiscount
-    sudo apt-get install python-pygments
+    #sudo apt-get install python-pygments
+
+Because pygments requires extra syntax, I prefer to use [`highlight.js`](http://softwaremaniacs.org/soft/highlight/en/download/) instead. For my needs, highlighting for `Bash`, `C++`, `CSS`, `HTML`, and `JavaScript` suffices. I make the assumption that `highlight.zip` is downloaded to `~/Downloads/highlight.zip`. 
+
+I also recommend `showdown.js` rather than `rdiscount`, but `rdiscount` works well enough and has the (dis)advantage of rendering server-side.
 
 Configuring Jekyll
 ---------
@@ -33,6 +37,71 @@ Creating a home for our site:
 
     cd ~/
     mkdir blog
+
+Create a site style:
+
+    cd ~/blog
+    mkdir images/
+    wget http://fastr.github.com/images/ribbedbg.png \
+      -O images/ribbedbg.png
+    mkdir stylesheets/
+
+`./stylesheets/fastr.css`
+
+    body {
+      background-color: #789;
+      background-image:url('/images/ribbedbg.png');
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom:1px dotted;
+      padding-left: 2px;
+      padding-right: 2px;
+      text-shadow: 1px 1px 1px #888;
+      -webkit-text-shadow: 1px 1px 1px #888;
+      -moz-text-shadow: 1px 1px 1px #888;
+    }
+    a:hover {
+      border-bottom: 1px solid;
+    }
+    #article, #header {
+      width: 950px;
+      background-color: #FFF;
+      padding: 10px;
+      padding-left: 15px;
+      margin: 15px;
+      border-radius: 5px;
+      -moz-border-radius: 5px;
+      -webkit-border-radius: 5px;
+    }
+    pre {
+      width: 900px;
+      padding: 5px;
+      padding-right: 10px;
+      padding-left: 10px;
+      margin: 5px;
+      margin-top: 20px;
+      margin-bottom: 30px;
+      box-shadow: 5px 5px 5px #888;
+      -webkit-box-shadow: 5px 5px 5px #888;
+      -moz-box-shadow: 5px 5px 5px #888;
+      border-radius: 5px;
+      -moz-border-radius: 5px;
+      -webkit-border-radius: 5px;
+    }
+
+
+Using `highlight.js` rather than pygments:
+
+    cd ~/blog
+    mkdir vendor/
+    # highlight.js as mentioned above
+    mv ~/Downloads/highlight.zip vendor/ 
+    cd vendor/
+    unzip highlight.zip
+    rm highlight.zip
+
 
 Create a site template:
 
@@ -45,12 +114,20 @@ Create a site template:
     <html>
     <head>
     <title>{{ page.title }}</title>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/fastr.css.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="/vendor/highlight/styles/sunburst.css" media="screen" />
+    <script src="/vendor/highlight/highlight.pack.js"></script>
+    <script>
+      hljs.initHighlightingOnLoad();
+    </script>
     </head>
 
     <body>
-    <h1>{{ page.title }}</h1>
+      <h1 id="header">{{ page.title }}</h1>
 
-    {{ content }}
+      <div id="article">
+        {{ content }}
+      </div>
     </body>
     </html>
 

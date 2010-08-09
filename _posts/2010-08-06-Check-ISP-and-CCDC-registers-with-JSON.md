@@ -16,16 +16,31 @@ Feed in an array of registers with values, get a printout of success / error.
 
 Script
 ======
+`ccdc_reg.js`
+
+    #!/usr/bin/env node
+    var registers = {},
+      devreg = require('./devreg').devreg,
+      device = require('./ccdc').ccdc,
+      settings = require('./settings').settings,
+      Futures = require('./futures');
+    
+    //devreg(device, device.base_addr.omap3530);
+    devreg(device, device.base_addr, settings);
 
 `devreg.js`
 
     #!/usr/bin/env node
     var g_registers = {},
-        sys   = require('sys'),
-        exec  = require('child_process').exec,
-        ccdc  = require('./ccdc').ccdc,
-        settings = require('./settings').settings,
-        child;
+        sys = require('sys'),
+        exec = require('child_process').exec,
+        device,
+        settings,
+        base_addr,
+        Futures = require('./futures');
+        // wget http://github.com/coolaj86/futures/raw/v0.9.0/lib/futures.js
+        // or
+        // npm install futures
 
     // TODO: put in the 'Zen' enumerate functions, not magic parameters
     function leadWith(string, len, char) {
@@ -49,7 +64,7 @@ Script
     }
 
     function print_nibbles(reg_name, value) {
-      var bits = ccdc.bits[reg_name],
+      var bits = device.bits[reg_name],
         bit_name,
         bit,
         shift,
@@ -137,9 +152,10 @@ Script
 
     // TODO platform abstract and move to devmem.js
     function devmem(reg_name, hex_value, size) {
-      var k, // key
+      var promise = Futures.promise();
+      k, // key
       v, // value
-      hexaddr = (ccdc.base_addr.substr(0, 8) + ccdc.registers[reg_name].substr(2)),
+      hexaddr = (base_addr.substr(0, 8) + device.registers[reg_name].substr(2)),
       hex,
       bin,
       dec;
@@ -161,29 +177,43 @@ Script
         stdout = stdout.substr(3); // removing leading ' 0x'
         dec = parseInt(stdout, 16);
         g_registers[reg_name] = dec;
+        promise.fulfill({reg_name : dec});
       });
+      return promise;
     }
 
-    function main() {
-      var key, value, hexaddr;
-      hexaddr = ccdc.base_addr.substr(0, 8);
+    function devreg(_device, _base_addr, _settings) {
+      var promise = Futures.promise();
+        promises = [],
+        join,
+        key,
+        value,
+        hexaddr;
 
-      //sys.puts(JSON.stringify(ccdc) + "\n");
-      for (key in ccdc.registers) {
-        if (!ccdc.registers.hasOwnProperty(key)) return;
-        value = ccdc.registers[key];
+      device = _device;
+      base_addr = _base_addr || device.base_addr;
+      settings = _settings || {};
+
+      //sys.puts(JSON.stringify(device) + "\n");
+      for (key in device.registers) {
+        if (!device.registers.hasOwnProperty(key)) return;
+        //value = device.registers[key];
         //sys.print(key + ": " + value.substr(2) + "\n");
-        devmem(key);
+        promises.push(devmem(key));
       }
-      // TODO implement Futures.promise();
-      setTimeout(function () {
-        //print_registers();
-        write_settings();
-        print_registers();
-      }, 2000);
+      join = Futures.join(promises);
+      // TODO validate writes
+      join
+        .when(write_settings)
+        .when(print_settings)
+        .when(function () {
+          promise.fulfill(g_registers);
+        });
+
+      return promise;
     }
 
-    main();
+    export.devreg = devreg;
 
 `settings.js`
 
