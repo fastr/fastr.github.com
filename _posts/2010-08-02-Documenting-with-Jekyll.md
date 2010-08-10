@@ -1,8 +1,9 @@
 ---
 layout: article
 title: Documenting with Jekyll
-categories: uncategorized
+categories: meta-documentation
 updated_at: 2010-08-02
+author: AJ ONeal
 ---
 
 Goal
@@ -11,6 +12,11 @@ Goal
 [Install Jekyll](http://blog.envylabs.com/2009/08/publishing-a-blog-with-github-pages-and-jekyll/) to use for writing documentation in Markdown syntax with code highlighting.
 
 Create a site which has a list of article categories. See [example](http://fastr.github.com/)
+
+Known Issues
+-------
+
+This document doesn't describe how to address the issue of **relative paths** of stylesheets, javascripts, etc in `_layouts/default.html`.
 
 Putting Jekyll to Good Use
 =========
@@ -48,11 +54,11 @@ Create a site style:
 
 `./stylesheets/fastr.css`
 
-    body {
+    body &#123;
       background-color: #789;
       background-image:url('/images/ribbedbg.png');
     }
-    a {
+    a &#123;
       color: inherit;
       text-decoration: none;
       border-bottom:1px dotted;
@@ -62,10 +68,10 @@ Create a site style:
       -webkit-text-shadow: 1px 1px 1px #888;
       -moz-text-shadow: 1px 1px 1px #888;
     }
-    a:hover {
+    a:hover &#123;
       border-bottom: 1px solid;
     }
-    #article, #header {
+    #article, #header &#123;
       width: 950px;
       background-color: #FFF;
       padding: 10px;
@@ -75,7 +81,7 @@ Create a site style:
       -moz-border-radius: 5px;
       -webkit-border-radius: 5px;
     }
-    pre {
+    pre &#123;
       width: 900px;
       padding: 5px;
       padding-right: 10px;
@@ -113,7 +119,7 @@ Create a site template:
     <!DOCTYPE html>
     <html>
     <head>
-    <title>{{ page.title }}</title>
+    <title>&#123;&#123; page.title }}</title>
     <link rel="stylesheet" type="text/css" href="/stylesheets/fastr.css.css" media="screen" />
     <link rel="stylesheet" type="text/css" href="/vendor/highlight/styles/sunburst.css" media="screen" />
     <script src="/vendor/highlight/highlight.pack.js"></script>
@@ -123,10 +129,10 @@ Create a site template:
     </head>
 
     <body>
-      <h1 id="header">{{ page.title }}</h1>
+      <h1 id="header">&#123;&#123; page.title }}</h1>
 
       <div id="article">
-        {{ content }}
+        &#123;&#123; content }}
       </div>
     </body>
     </html>
@@ -137,9 +143,9 @@ Create a site template:
     layout: default
     ---
     <div>
-      {{ content }}
+      &#123;&#123; content }}
     </div>
-    <em>Updated at {{ page.updated_at }} </em>
+    <em>Updated at &#123;&#123; page.updated_at }} </em>
 
 This next part is a bit of a hack, but it will list all of the categories and also each article by category.
 
@@ -158,32 +164,33 @@ If you care to [dig into `liquid`](http://wiki.github.com/tobi/liquid/liquid-for
     ---
     <h2>Categories:</h2>
     <ul>
-    {% for category in site.categories %}
-      <li><a href="#{{ category | first }}">{{ category | first }}</a></li>
-    {% endfor %}
+    &#123;% for category in site.categories %}
+      <li><a href="#&#123;&#123; category | first }}">&#123;&#123; category | first }}</a></li>
+    &#123;% endfor %}
     </ul>
 
     <h2>Articles by Category:</h2>
     <ul>
-    {% for category in site.categories %}
-      <li><a name="{{ category | first }}">{{ category | first }}</a>
+    &#123;% for category in site.categories %}
+      <li><a name="&#123;&#123; category | first }}">&#123;&#123; category | first }}</a>
         <ul>
-        {% for posts in category %}
-          {% for post in posts %}
-            <li><a href="{{ post.url }}">{{ post.title }}</a></li>
-          {% endfor %}
-        {% endfor %}
+        &#123;% for posts in category %}
+          &#123;% for post in posts %}
+            <li><a href="&#123;&#123; post.url }}">&#123;&#123; post.title }}</a></li>
+          &#123;% endfor %}
+        &#123;% endfor %}
         </ul>
+        <br/>
       </li>
-    {% endfor %}
+    &#123;% endfor %}
     </ul>
 
-    {% for post in site.categories.quickstart %}
-    <!-- h2><a href=".{{ post.url }}">{{ post.title }}</a></h2 -->
-    <!-- {{ post.content }} -->
-    {% endfor %}
+    &#123;% for post in site.categories.quickstart %}
+    <!-- h2><a href=".&#123;&#123; post.url }}">&#123;&#123; post.title }}</a></h2 -->
+    <!-- &#123;&#123; post.content }} -->
+    &#123;% endfor %}
 
-    Page generated: {{ site.time | date_to_string }}
+    Page generated: &#123;&#123; site.time | date_to_string }}
 
 Script to create articles:
 
@@ -193,15 +200,15 @@ This script puts the date and format for you, that way you just write the title.
 `./mkarticle`
 
     #!/bin/bash
-    TITLE=${1}
+    TITLE=$&#123;1}
     POSTDIR=./_posts
 
-    if [ ! -n "${TITLE}" ]; then
+    if [ ! -n "$&#123;TITLE}" ]; then
       echo "USAGE: mkpost title-of-post"
       exit 1
     fi
 
-    if [ ! -n "${EDITOR}" ]; then
+    if [ ! -n "$&#123;EDITOR}" ]; then
       if [ -n "`which vim`" ]; then
         EDITOR=vim
       elif [ -n "`which nano`" ]; then
@@ -213,22 +220,22 @@ This script puts the date and format for you, that way you just write the title.
       fi
     fi
 
-    FILE=`date "+%Y-%m-%d"`-${TITLE}.markdown
+    FILE=`date "+%Y-%m-%d"`-$&#123;TITLE}.markdown
 
-    if [ ! -e "${POSTDIR}/${FILE}" ]
+    if [ ! -e "$&#123;POSTDIR}/$&#123;FILE}" ]
     then
-      mkdir -p ${POSTDIR}
-      cat - > ${POSTDIR}/${FILE} << EOF
+      mkdir -p $&#123;POSTDIR}
+      cat - > $&#123;POSTDIR}/$&#123;FILE} << EOF
     ---
     layout: article
-    title: `echo ${TITLE} | sed 's/-/ /g'`
+    title: `echo $&#123;TITLE} | sed 's/-/ /g'`
     categories: !!UPDATED ME!!
     updated_at: `date +'%Y-%m-%d'`
     rendered: site.time
     ---
 
 
-    You just created " ${POSTDIR}/${FILE} "! 
+    You just created " $&#123;POSTDIR}/$&#123;FILE} "! 
 
     Notice the UPDATED ME in the categories above.
     Please change that to be a category.
@@ -269,7 +276,7 @@ This script puts the date and format for you, that way you just write the title.
     EOF
     fi
 
-    $EDITOR ${POSTDIR}/${FILE}
+    $EDITOR $&#123;POSTDIR}/$&#123;FILE}
 
 Creating an article:
 
@@ -366,7 +373,7 @@ http://gist.github.com/143571
         require 'jekyll'
         include Jekyll::Filters
 
-        options = Jekyll.configuration({})
+        options = Jekyll.configuration(&#123;})
         site = Jekyll::Site.new(options)
         site.read_posts('')
 
@@ -382,7 +389,7 @@ http://gist.github.com/143571
 
         site.categories.sort.each do |category, posts|
           html << <<-HTML
-          <h3 id="#{category}">#{category}</h3>
+          <h3 id="#&#123;category}">#&#123;category}</h3>
           HTML
 
           html << '<ul class="posts">'
@@ -390,8 +397,8 @@ http://gist.github.com/143571
             post_data = post.to_liquid
             html << <<-HTML
               <li>
-                <div>#{date_to_string post.date}</div>
-                <a href="#{post.url}">#{post_data['title']}</a>
+                <div>#&#123;date_to_string post.date}</div>
+                <a href="#&#123;post.url}">#&#123;post_data['title']}</a>
               </li>
             HTML
           end
