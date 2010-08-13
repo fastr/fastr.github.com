@@ -2,7 +2,7 @@
 layout: article
 title: check isp and ccdc registers with json
 categories: ccdc isp
-updated_at: 08,2010-06
+updated_at: 2010-08-09
 ---
 
 Goal
@@ -21,25 +21,32 @@ Script
 `ccdc-reg.js`
 
     #!/usr/bin/env node
-    var registers = {},
-      devreg = require('./devreg').devreg,
-      device = require('./ccdc').ccdc,
+    var devreg = require('./devreg').devreg,
+      devices = require('./ispccdc'),
+      flattenDocs = require('./flattendocs').flattenDocs,
       settings = require('./settings').settings,
       Futures = require('./futures');
     
     //devreg(device, device.base_addr.omap3530);
-    devreg(device, device.base_addr, settings);
+    Objects.keys(devices).each(function (deviceName, i, arr) {
+      device = flattenDocs(devices[deviceName]);
+      devreg(device, device.base_addr, settings)
+        .when(function (register_values) {
+          // do nothing right now
+        });
+    });
 
 
 `devreg.js`
 
-    var g_registers = {},
+    var physical_registers = {},
         sys = require('sys'),
+        parseNumber = require('parse_number').parseNumber,
         exec = require('child_process').exec,
         device,
         settings,
         base_addr,
-        addr_len = 32 - 1,
+        global_msb = 32 - 1,
         Futures = require('./futures');
         // wget http://github.com/coolaj86/futures/raw/v0.9.0/lib/futures.js
         // or
@@ -66,9 +73,17 @@ Script
       return string;
     }
 
+    // TODO
+    // print '0x    0f1 ' instead of '0x000000f1'
+    function format_field(value, shift, len, size) {
+      var i = 0, string = ''+value;
+      string = leadWith(string, shift+len);
+      string = trailWith(string, size);
+    }
+
     function print_nibbles(reg_name, value) {
-      var bits = device.bits[reg_name],
-        bit_name,
+      var bits = device.fields[reg_name],
+        field_name,
         bit,
         slice,
         shift,
@@ -78,11 +93,11 @@ Script
       //sys.print(bits + ' ' + reg_name + ' ' + value);
       sys.print("\n");
       sys.print(leadWith('', 22, ' ') + leadWith('-', 12+8+8, '-') + "\n");
-      for (bit_name in bits) {
-        if (!bits.hasOwnProperty(bit_name)) return;
+      for (field_name in bits) {
+        if (!bits.hasOwnProperty(field_name)) return;
 
         len = 0;
-        slice = bits[bit_name];
+        slice = bits[field_name];
         // interpret correctly no matter the order [0:2] or [3:1] or [4]
         if ('undefined' !== typeof slice[1]) {
           if (slice[1] > slice[0]) {
@@ -102,20 +117,20 @@ Script
         // read bit 31:29, from a 32-bit register
         //  we must substr char 0:2
         if (true /* == lsb */) {
-          shift = addr_len - shift;
+          shift = global_msb - shift;
         }
 
-        bit_name = trailWith(bit_name + ' [' + slice.join(':') + '] ', 20);
+        field_name = trailWith(field_name + ' [' + slice.join(':') + '] ', 20);
 
         bin = leadWith(value.toString(2), 32, '0');
         nibble = bin.substr(shift, len);
 
-        //sys.print('  ' + bit_name + ' bin' + bin + 'slice:' + slice.join(',') + ' ' + len + ' nib:' + nibble + "\n");
+        //sys.print('  ' + field_name + ' bin' + bin + 'slice:' + slice.join(',') + ' ' + len + ' nib:' + nibble + "\n");
 
         hex = leadWith(parseInt(nibble, 2).toString(16), 8, '0');
         dec = parseInt(nibble, 2).toString(10);
 
-        sys.print('  ' + bit_name + " 0x" + hex + " == " + dec + "\n");
+        sys.print('  ' + field_name + " 0x" + hex + " == " + dec + "\n");
       }
       sys.print(leadWith('', 22, ' ') + leadWith('-', 12+8+8, '-') + "\n");
       sys.print("\n\n");
@@ -128,10 +143,10 @@ Script
         hex,
         bin;
 
-      for (reg_name in g_registers) {
-        if (!g_registers.hasOwnProperty(reg_name)) return;
+      for (reg_name in physical_registers) {
+        if (!physical_registers.hasOwnProperty(reg_name)) return;
 
-        value = g_registers[reg_name];
+        value = physical_registers[reg_name];
         dec = leadWith(value.toString(10), 12, '0');
         hex = leadWith(value.toString(16), 8, '0');
         bin = leadWith(value.toString(2), 32, '0');
@@ -142,36 +157,136 @@ Script
       }
     }
 
+    // slice example: [3:1]
+    function getBinaryFieldData(slice, register_size, field_value) {
+      var len = 0,
+        mask = 1,
+        last_bit = register_size - 1,
+        shift,
+        i;
+
+      field_value = field_value || 0;
+
+      // interpret correctly no matter the order [0:2] or [3:1] or [4]
+      if ('undefined' !== typeof slice[1]) {
+        // shift should be the lowest number
+        if (slice[1] > slice[0]) {
+          shift = slice[0];
+          len = slice[1] - slice[0];
+        } else {
+          shift = slice[1];
+          len = slice[0] - slice[1];
+        }
+      } else {
+        shift = slice[0];
+      }
+      // The length must be at least 1
+      len += 1;
+
+      // create a bit mask of all 1s
+      // Note: mask is already 1 to start with
+      for (i = 1; i < len; i += 1) {
+        mask <<= i;
+        mask &= 1;
+      }
+
+      if (field_value > mask) {
+        // TODO would this work for negative numbers? Wolud you use a negative number in a register?
+        throw new Error('cowardly refusing to set ' + field_name + ' to "' + field_value + '" when the max value is "' + mask + '"');
+      }
+
+      // move the mask and the value into the right place
+      for (i = 0; i <= shift; i += 1) {
+        field_value <<= i;
+        mask <<= i;
+      }
+
+      if (mask != (mask & field_value)) {
+        throw new Error('Logic error "mask != (mask & field_value"');
+      }
+
+      return {
+        // consider an 8-bit register
+        and_mask: ~mask, // 11110011 resets the 2nd and 3rd bit
+        or_value: field_value, // 00001100 ready to be ORed with the full register
+        shift: shift, // 2 bits in (right to left), the 2nd and 3rd bit
+        length: len, // 2 bits long
+        substr_start: last_bit - (shift + (len - 1)) // 4 bits in (left to right) 0000 1100
+      };
+    }
+
+    function andOrBinaryRegisterValue(reg_name, register) {
+      var register_value = physical_registers[reg_name] || 0, 
+        field_vals, 
+        documentation = device.fields[reg_name];
+
+      if ('undefined' === typeof documentation) {
+        throw new Error('"' + reg_name + '"' undefined. Please check spelling and/or update the documentation file');
+      }
+
+      // The user was only interested it the value as a whole
+      if ('number' === typeof register) {
+        register_value = register;
+        return register_value;
+      }
+      if ('string' === typeof register) {
+        register_value = parseNumber(register);
+        return register_value;
+      }
+
+      // The user wants to and & or the new value with the old value on a field-by-field basis
+      if ('object' === typeof register) {
+        Object.keys(register).forEach(function (field_name, i, arr) {
+          var field;
+          if ('undefined' === typeof documentation[field_name]) {
+            throw new Error('"' + reg_name + ':' + field_name + '"' undefined. Please check spelling and/or update the documentation file');
+          }
+          field = getBinaryFieldData(documentation[field_name], global_msb + 1, register[field_name]);
+          register_value &= field.and_mask; // set the field to 0
+          register_value |= field.or_value; // set the field to the value
+        });
+        return register_value;
+      }
+
+      throw new Error('value in "settings:' + reg_name + '" should be in the form "0x00000000", "0b00000000", decimal, or key/value pairs of bits');
+      //throw new Error('unexpected type ' + typeof register + ' for "' + JSON.stringify(register) + '"');
+    }
+
     function write_settings() {
-      var bits,
-        reg_name,
-        value;
+      var reg_name,
+        register_value;
 
       //sys.print( ' ' + JSON.stringify(settings) + "\n");
 
       for (reg_name in settings) {
         if (!settings.hasOwnProperty(reg_name)) return;
-        if (!g_registers.hasOwnProperty(reg_name)) throw new Error("'" + k + "' isn't a known register");
-        value = settings[reg_name];
-        
-        if ('number' == typeof value) {
-          // awesome
-        } else if ('string' == typeof value) {
-          value = value.toLowerCase();
-          if (0 === value.indexOf('0x')) {
-            value = parseInt(value.substr(2), 16);
-          } else if (0 === value.indexOf('0b')) {
-            value = parseInt(value.substr(2), 2);
-          } else {
-            value = parseInt(value, 10);
-          }
-        } else if ('object' == typeof value) {
-          throw new Error('hashmaps of bits for writing Not supported yet');
-        } else {
-          throw new Error('values in settings should be in the form "0x00000000", "0b00000000", decimal, or key/value pairs of bits');
-        }
+        if (!physical_registers.hasOwnProperty(reg_name)) throw new Error("'" + reg_name + "' isn't a known register");
 
-        devmem(reg_name, '0x' + value.toString(16), 'u32');
+        register_value = andOrBinaryRegisterValue(reg_name, settings[reg_name]);
+
+        devmem(reg_name, '0x' + register_value.toString(16), 'u32').when(function () {
+          if (register_value !== physical_registers[reg_name]) {
+            sys.puts('ERR: "' + reg_name + '" was written as "' + register_value + '" but read as "' + physical_registers[reg_name]  + '"');
+          }
+        });
+      }
+    }
+
+    function assert_settings() {
+      var reg_name,
+        register_value;
+
+      //sys.print( ' ' + JSON.stringify(settings) + "\n");
+
+      for (reg_name in settings) {
+        if (!settings.hasOwnProperty(reg_name)) return;
+        if (!physical_registers.hasOwnProperty(reg_name)) throw new Error("'" + k + "' isn't a known register");
+
+        register_value = andOrBinaryRegisterValue(reg_name, settings[reg_name]);
+        if (register_value !== (register_value & physical_registers[reg_name])) {
+          // TODO compare fields
+          sys.puts('ERR: "' + reg_name + '" was expected to be "' + register_value + '" but is actualy "' + physical_registers[reg_name]  + '"');
+        }
       }
     }
 
@@ -180,7 +295,7 @@ Script
       var promise = Futures.promise(),
         k, // key
         v, // value
-        hexaddr = (base_addr.substr(0, 8) + device.registers[reg_name].substr(2)),
+        hexaddr = (parseNumber(base_addr) | parseNumber(device.registers[reg_name]));
         hex,
         bin,
         dec;
@@ -201,7 +316,7 @@ Script
         // TODO handle other formats?
         stdout = stdout.substr(3); // removing leading ' 0x'
         dec = parseInt(stdout, 16);
-        g_registers[reg_name] = dec;
+        physical_registers[reg_name] = dec;
         promise.fulfill({reg_name : dec});
       });
       return promise;
@@ -232,13 +347,17 @@ Script
         .when(write_settings)
         .when(print_registers)
         .when(function () {
-          promise.fulfill(g_registers);
+          promise.fulfill(physical_registers);
         });
 
       return promise;
     }
 
     exports.devreg = devreg;
+
+`flattendocs.js`
+
+    // Work in Progress
 
 `settings.js`
 
@@ -292,7 +411,7 @@ Script
     exports.settings = settings;
 
 
-`ccdc.js`
+`ispccdc.js`
 
     // TODO add reset values as to be able 
     // to check for hardware bugs as well
@@ -335,7 +454,7 @@ Script
         "lsc_table_base": "0xa0",
         "lsc_table_offset": "0xa4"
       },
-      "bits": {
+      "fields": {
         "pid": {
           "reserved": [31,24],
           "tid": [23,16],
@@ -592,5 +711,8 @@ Script
           "offset": [15,0]
         }
       }
-    }
+    };
+    var isp = {
+    };
     exports.ccdc = ccdc;
+    exports.isp = isp;

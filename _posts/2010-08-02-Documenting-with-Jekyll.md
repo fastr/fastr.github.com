@@ -197,7 +197,7 @@ Script to create articles:
 Articles must be in the format `YYYY-MM-DD-Title-of-Article.markup` such as `2010-08-05-Installing-Jekyll.markdown`.
 This script puts the date and format for you, that way you just write the title.
 
-`./mkarticle`
+`./mkdocument`
 
     #!/bin/bash
     TITLE=$&#123;1}
@@ -307,6 +307,7 @@ Configure our site:
     markdown: rdiscount
     lsi: true
     exclude: mkarticle
+    permalink: /articles/:title.html
 
 Hosting the site on Github
 ====================
