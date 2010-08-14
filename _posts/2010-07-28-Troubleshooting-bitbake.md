@@ -99,9 +99,9 @@ Some of these worst case fixes are required when
 Without `devshell`
 -------
 
-  1. cd ${OVEROTOP}/tmp/work/${ARCH}/${PACKAGE}_${VER}_r${REV}/${BUILD}/
+  1. cd `${OVEROTOP}/tmp/work/${ARCH}/${PACKAGE}_${VER}_r${REV}/${BUILD}`
     * `${ARCH}` is probably `armv7a-angstrom-linux-gnueabi`
-    * `${BUILD}` is a directory which is not NOT `src` or `temp`
+    * `${BUILD}` is a directory which is not NOT `src` or `temp` such as the package name or `git` or `trunk` or `svn`
     * `${VER}` and `${REV}` - duh.
   2. `cp ../temp/run.do_compile.${OLD_PID}
     * `${OLD_PID}` is a number like 3597 or 4352
