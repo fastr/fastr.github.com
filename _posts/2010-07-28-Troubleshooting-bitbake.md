@@ -9,6 +9,30 @@ Goal
 
 Aleviate some of the `bitbake` headaches.
 
+Quick hacking without `devshell`
+-------
+
+If the package that you're building doesn't build you can intercept manually build in the bitbake environment and then continue.
+
+NOTE: `${OVEROTOP}` refers to the **actual environment variable**
+NOTE: `${PACKAGE}` should be replaced with the name of the package you are trying to build want
+
+  0. `bitbake ${PACKAGE}`
+  1. cd `${OVEROTOP}/tmp/work/${ARCH}/${PACKAGE}_${VER}_r${REV}/${BUILD}`
+    * `${ARCH}` is probably `armv7a-angstrom-linux-gnueabi`
+    * `${BUILD}` is a directory which is not NOT `src` or `temp` such as the package name or `git` or `trunk` or `svn`
+    * `${VER}` and `${REV}` - duh.
+  2. `cp ../temp/run.do_compile.${OLD_PID}`
+    * `${OLD_PID}` is a number like 3597 or 4352
+    * `do_compile` could be any task - do_install, etc
+  3. `vim run.do_compile.1234`
+    1. comment out `do_compile()` (or whatever)
+    2. add `bash --norc`
+  4. `./run.do_compile.1234` will put you in an environment with all variables set
+  5. `make` (or whatever) to try to build, debug issues
+  6. `exit` (when done to go back to shell without run.do_compile settings)
+  7. `bitbake ${PACKAGE}`
+
 devshell
 ========
 
@@ -23,19 +47,14 @@ Common Problems
 
 Be very careful to read the error messages. Many of these errors are result of simple copy/paste/delete typos and "could not find" xzy is simply a missing symlink or a file in the wrong place.
 
-
-NOTE: `${PACKAGE}` should be replaced with the name of the package you are trying to build want
-
-NOTE: `xyz` refers to some other package, there is no package named `xyz`.
-
-NOTE: `${OVEROTOP}` refers to the **actual environment variable**
-
 There are a number of problems that I run into over and over.
 
 `/bin/sh couldn't find xyz`
 ---------
 
 Possibilities
+
+NOTE: `xyz` refers to some other package, there is no package named `xyz`.
 
   * `bitbake xyz-native` - it may just be that the package maintainer left `DEPENDS += "xyz-native"` out of xyz-native_0.bb
     1. `bitbake xyz-native
@@ -96,19 +115,3 @@ Some of these worst case fixes are required when
   * ABI has changed
   * tmp directory has moved
 
-Without `devshell`
--------
-
-  1. cd `${OVEROTOP}/tmp/work/${ARCH}/${PACKAGE}_${VER}_r${REV}/${BUILD}`
-    * `${ARCH}` is probably `armv7a-angstrom-linux-gnueabi`
-    * `${BUILD}` is a directory which is not NOT `src` or `temp` such as the package name or `git` or `trunk` or `svn`
-    * `${VER}` and `${REV}` - duh.
-  2. `cp ../temp/run.do_compile.${OLD_PID}
-    * `${OLD_PID}` is a number like 3597 or 4352
-    * `do_compile` could be any task - do_install, etc
-  3. `vim run.do_compile.1234`
-    1. comment out `do_compile()` (or whatever)
-    2. add `bash --norc`
-  4. `./run.do_compile.1234` will put you in an environment with all variables set
-  5. `make` (or whatever) to try to build, debug issues
-  6. `exit` (when done to go back to shell without run.do_compile settings)
