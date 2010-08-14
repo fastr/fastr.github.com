@@ -2,7 +2,7 @@
 layout: article
 title: Troubleshooting bitbake
 categories: bitbake
-updated_at: 2010-08-13]4
+updated_at: 2010-08-14
 ---
 Goal
 ====
@@ -10,7 +10,7 @@ Goal
 Aleviate some of the `bitbake` headaches.
 
   * NOTE: `${OVEROTOP}` refers to the **actual environment variable**
-  * NOTE: `${PACKAGE}` should be replaced with the name of the package you are trying to build want
+  * NOTE: `${PACKAGE}` should be replaced with the **name of the package** you are trying to build.
 
 Quick hacking without `devshell`
 -------
