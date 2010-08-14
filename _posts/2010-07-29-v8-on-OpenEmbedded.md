@@ -42,10 +42,10 @@ However, with a little Makefile magic I can get it to compile well enough it see
 `${OVEROTOP}/user.collection/recipes/libv8/files/Makefile`
 ------------
 
-  all:
-  	CC=`which ${CC}` CXX=`which ${CXX}` AR=`which ${AR}` RANLIB=`which ${RANLIB}` scons arch=arm
-  
-  .PHONY: all
+    all:
+      CC=`which ${CC}` CXX=`which ${CXX}` AR=`which ${AR}` RANLIB=`which ${RANLIB}` scons arch=arm
+    
+    .PHONY: all
 
 
 `${OVEROTOP}/user.collection/recipes/libv8/files/overo-opts.patch`
