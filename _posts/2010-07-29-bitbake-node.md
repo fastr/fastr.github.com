@@ -2,7 +2,7 @@
 layout: article
 title: bitbake node - Node.js on OpenEmbedded
 categories: nodejs bitbake
-updated_at: 2010-07-29
+updated_at: 2010-08-14
 ---
 
 Goal

@@ -1,6 +1,6 @@
 ---
 layout: article
-title: v8 on OpenEmbedded
+title: bitbake libv8 - v8 on OpenEmbedded
 categories: v8 scons
 updated_at: 2010-08-14
 ---
@@ -36,6 +36,9 @@ However, with a little Makefile magic I can get it to compile well enough it see
     "
     S = "${WORKDIR}/trunk"
     FILES_${PN} = "${bindir}/libv8"
+    do_install() {
+    # install the lib somewhere?
+    }
 
     #inherit scons # doesn't currently provide meaningful setup
 

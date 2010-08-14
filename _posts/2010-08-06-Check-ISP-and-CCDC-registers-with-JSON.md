@@ -1,7 +1,7 @@
 ---
 layout: article
-title: check isp and ccdc registers with json
-categories: ccdc isp
+title: Check isp and ccdc registers with json
+categories: isp-ccdc
 updated_at: 2010-08-09
 ---
 
