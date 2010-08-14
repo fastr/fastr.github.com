@@ -1,7 +1,7 @@
 ---
 layout: article
 title: Format MicroSDHC for Gumstix Overo
-categories: uncategorized
+categories: gumstix u-boot
 updated_at: 2010-07-30
 ---
 

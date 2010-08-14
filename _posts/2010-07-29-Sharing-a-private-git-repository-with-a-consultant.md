@@ -1,7 +1,7 @@
 ---
 layout: article
 title: Sharing a private git repository with a consultant
-categories: uncategorized
+categories: git team consultant
 updated_at: 2010-07-29
 ---
 

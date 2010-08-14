@@ -1,7 +1,7 @@
 ---
 layout: article
 title: WAF on OpenEmbedded
-categories: uncategorized
+categories: waf bitbake
 updated_at: 2010-07-26
 ---
 

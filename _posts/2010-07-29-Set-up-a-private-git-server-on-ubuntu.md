@@ -1,7 +1,7 @@
 ---
 layout: article
 title: Set up a private git server on ubuntu
-categories: uncategorized
+categories: git team
 updated_at: 2010-07-29
 ---
 

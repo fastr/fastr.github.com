@@ -1,7 +1,7 @@
 ---
 layout: article
 title: Creating a custom board_overo.c
-categories: uncategorized
+categories: gumstix embedded
 updated_at: 2010-07-28
 ---
 

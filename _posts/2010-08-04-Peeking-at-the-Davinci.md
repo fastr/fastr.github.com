@@ -1,7 +1,7 @@
 ---
 layout: article
 title: Peeking at the Davinci
-categories: uncategorized
+categories: isp-ccdc davinci
 updated_at: 2010-08-04
 ---
 

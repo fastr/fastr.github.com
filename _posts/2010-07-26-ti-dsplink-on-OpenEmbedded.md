@@ -1,7 +1,7 @@
 ---
 layout: article
 title: ti dsplink on OpenEmbedded
-categories: uncategorized
+categories: dvsdk bitbake
 updated_at: 2010-07-26
 ---
 

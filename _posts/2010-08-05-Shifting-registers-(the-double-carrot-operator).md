@@ -1,7 +1,7 @@
 ---
 layout: article
 title: Shifting registers (the double carrot operator)
-categories: uncategorized
+categories: c embedded
 updated_at: 2010-08-05
 ---
 

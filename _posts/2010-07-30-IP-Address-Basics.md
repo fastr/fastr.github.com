@@ -1,7 +1,7 @@
 ---
 layout: article
 title: IP Address Basics
-categories: uncategorized
+categories: network
 updated_at: 2010-07-30
 ---
 

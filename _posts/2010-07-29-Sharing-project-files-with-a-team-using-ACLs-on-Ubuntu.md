@@ -1,7 +1,7 @@
 ---
 layout: article
 title: Sharing project files with a team using ACLs on Ubuntu
-categories: uncategorized
+categories: unfinished ubuntu team
 updated_at: 2010-07-29
 ---
 

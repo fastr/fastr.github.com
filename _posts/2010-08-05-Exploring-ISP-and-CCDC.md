@@ -1,7 +1,7 @@
 ---
 layout: article
 title: Exploring ISP and CCDC
-categories: uncategorized
+categories: isp-ccdc omap
 updated_at: 2010-08-05
 ---
 

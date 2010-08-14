@@ -1,7 +1,7 @@
 ---
 layout: article
 title: Export gpio pins on gumstix
-categories: uncategorized
+categories: gpio gumstix
 updated_at: 2010-08-03
 ---
 

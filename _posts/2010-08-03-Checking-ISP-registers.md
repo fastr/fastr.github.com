@@ -1,7 +1,7 @@
 ---
 layout: article
 title: Checking ISP registers
-categories: uncategorized
+categories: isp-ccdc
 updated_at: 2010-08-03
 ---
 

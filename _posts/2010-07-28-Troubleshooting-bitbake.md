@@ -23,12 +23,12 @@ If the package that you're building doesn't build you can intercept manually bui
     * `${BUILD}` is a directory which is not NOT `src` or `temp` such as the package name or `git` or `trunk` or `svn`
     * `${VER}` and `${REV}` - duh.
   2. `cp ../temp/run.do_compile.${OLD_PID} ./`
-    * `${OLD_PID}` is a number like 3597 or 4352
-    * `do_compile` could be any task - do_install, etc
+    * `${OLD_PID}` is a number like `3597` or `4352`
+    * `do_compile` could be any task - `do_install`, etc
   3. `vim run.do_compile.1234`
-    1. comment out `do_compile()` (or whatever)
+    1. comment out the last line: `do_compile()` (or `do_install()` or whatever)
     2. add `bash --norc`
-  4. `./run.do_compile.1234` will put you in an environment with all variables set
+  4. `./run.do_compile.${OLD_PID}` will put you in an environment with all variables set
   5. `make` (or whatever) to try to build, debug issues
   6. `exit` (when done to go back to shell without run.do_compile settings)
   7. `bitbake ${PACKAGE}`

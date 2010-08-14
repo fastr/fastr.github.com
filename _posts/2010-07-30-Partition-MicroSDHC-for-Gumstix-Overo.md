@@ -1,7 +1,7 @@
 ---
 layout: article
 title: Partition MicroSDHC for Gumstix Overo
-categories: uncategorized
+categories: u-boot gumstix
 updated_at: 2010-07-30
 ---
 
