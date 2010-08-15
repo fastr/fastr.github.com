@@ -4,13 +4,10 @@ title: bitbake node - Node.js on OpenEmbedded
 categories: nodejs bitbake
 updated_at: 2010-08-14
 ---
-
 Goal
 ====
 
-I would like to be able to cross-compile nodejs using bitbake.
-If you're interested in building it natively on a Gumstix Overo (shared or static), that's been done.
-See the other article of similar name.
+I would like to be able to cross-compile nodejs using bitbake. (I've already got it [natively compiled on the Gumstix Overo](/articles/bitbake-node.html))
 
     bitbake node
     opkg install node
@@ -18,12 +15,12 @@ See the other article of similar name.
 Current Status
 ==============
 
-I either have to figure out how to compile v8 with node or use it as a shared library. Almost there...
+It compiles!!! Now I just have to finish packaging it as a bitbake recipe.
 
 Files
 =====
 
-These are the files I have so far
+These are the files I have so far. They still need a few tweaks before I create a bitbake recipe.
 
 node_0.1.104.bb
 -----------------
@@ -83,6 +80,14 @@ Same as above with one major change:
      
        have_librt = conf.check(lib='rt', uselib_store='RT')
        if have_librt:
+
+and another snippet:
+
+    -  cmd_R = 'python "%s" -j %d -C "%s" -Y "%s" visibility=default mode=%s %s library=static snapshot=on'
+    +  cmd_R = 'python "%s" -j %d -C "%s" -Y "%s" visibility=default mode=%s %s library=static'
+
+
+
 
 ./node-v0.1.104/wscript
 ---------------------
