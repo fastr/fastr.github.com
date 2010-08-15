@@ -81,14 +81,6 @@ Same as above with one major change:
        have_librt = conf.check(lib='rt', uselib_store='RT')
        if have_librt:
 
-and another snippet:
-
-    -  cmd_R = 'python "%s" -j %d -C "%s" -Y "%s" visibility=default mode=%s %s library=static snapshot=on'
-    +  cmd_R = 'python "%s" -j %d -C "%s" -Y "%s" visibility=default mode=%s %s library=static'
-
-
-
-
 ./node-v0.1.104/wscript
 ---------------------
 
@@ -105,3 +97,9 @@ and another snippet:
          mode = "release"
        else:
          mode = "debug"
+
+and another snippet:
+
+    -  cmd_R = 'python "%s" -j %d -C "%s" -Y "%s" visibility=default mode=%s %s library=static snapshot=on'
+    +  cmd_R = 'python "%s" -j %d -C "%s" -Y "%s" visibility=default mode=%s %s library=static'
+
