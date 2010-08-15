@@ -16,18 +16,19 @@ Current Status
 
 It compiles!!! Now I just have to finish packaging it as a bitbake recipe.
 
-  1. Copy the recipe below and put it in the location specified.
+  0. [setup your gumstix build environment](http://www.gumstix.net/Setup-and-Programming/view/Overo-Setup-and-Programming/Setting-up-a-build-environment/111.html)
+  1. Copy the recipe below and put it in the location specified, creating folders as necessary.
   2. run `bitbake node`
   3. once it fails, go in `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/node-0.1.104-r0/node-0.1.104/` and edit the files by hand.
   4. `bitbake node` again. It should succeed.
-  5. copy the raw `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/nodejs-0.1.104-r0/node-v0.1.104/node` whereever you need it.
+  5. copy the raw `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/node-0.1.104-r0/node-v0.1.104/node` whereever you need it.
 
 Files
 =====
 
 These are the files I have so far. They still need a few tweaks before I create a bitbake recipe.
 
-They do compile and leave the useable `node` binary in `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/nodejs-0.1.104-r0/node-v0.1.104/node`.
+They do compile and leave the useable `node` binary in `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/node-0.1.104-r0/node-v0.1.104/node`.
 
 They don't create the `${OVEROTOP}/tmp/deploy/glibc/ipk/armv7a/node_0.1.104.ipk` that you would hope for... yet.
 
@@ -74,7 +75,7 @@ Same as above with one major change:
 
 This will become `files/libev-arm-cross.patch` once packaged.
 
-Currently you can modify the failed build in place from `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/nodejs-0.1.104-r0/`
+Currently you can modify the failed build in place from `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/node-0.1.104-r0/`
 
     --- a/deps/libev/wscript
     +++ b/deps/libev/wscript
@@ -101,7 +102,7 @@ Currently you can modify the failed build in place from `${OVEROTOP}/tmp/work/ar
 
 This will become `files/node-arm-cross.patch` once packaged.
 
-Currently you can modify the failed build in place from `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/nodejs-0.1.104-r0/`
+Currently you can modify the failed build in place from `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/node-0.1.104-r0/`
 
     --- a/wscript
     +++ b/wscript
