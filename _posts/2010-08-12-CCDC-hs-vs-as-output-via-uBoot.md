@@ -66,7 +66,7 @@ And copy it to your gumstix:
 **WARNING**: Be wise. Test your u-boot on an SDHC before corrupting your NAND.
 
     GUMSTIX=192.168.1.20 # change this to your gumstix's address
-    scp ${OETMP}/deploy/glibc/images/overo/uImage-overo.bin ${GUMSTIX}:/media/mmcblk0p1/u-boot.bin
+    scp ${OVEROTOP}/tmp/deploy/glibc/images/overo/u-boot-overo.bin ${GUMSTIX}:/media/mmcblk0p1/u-boot.bin
 
 
 node-devreg

@@ -1,27 +1,94 @@
 ---
 layout: article
 title: ti dsplink on OpenEmbedded
-categories: dvsdk bitbake
+categories: unfinished dvsdk bitbake
 updated_at: 2010-07-26
 ---
+According to TI's [Getting Started Guide: OMAP35x DVEVM Software Setup], you'll need the following packages:
 
-Disclaimer: I'm using a Gumstix Overo, which uses Angstrom. I assume that this will be helpful to most anyone developing on OpenEmbedded, however, YMMV.
+  * [dvsdk_3_01_00_10_Setup.bin](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/dvsdk/DVSDK_3_00/latest/index_FDS.html) [local](/files/dvsdk_3_01_00_10_Setup.bin)
+    * This package contains these other packages:
+      * bios_5_41_00_06
+      * biosutils_1_02_02
+      * ceutils_1_06
+      * cg_xml_v2_12_00
+      * codec_engine_2_25_02_11
+      * dmai_2_05_00_12
+      * dsplink_linux_1_65_00_02
+      * dvsdk_3_01_00_10_releasenotes.pdf
+      * dvsdk_demos_3_01_00_13
+      * dvtb_4_20_05
+      * edma3_lld_01_11_00_03
+      * framework_components_2_25_01_05
+      * linuxlibs_3_01
+      * linuxutils_2_25_02_08
+      * local_power_manager_linux_1_24_02_09
+      * xdais_6_25_02_11
+      * xdctools_3_16_01_27
+    * It also contains a bunch of files and directories with misleading names:
+      * bin - check.sh info.sh
+      * clips - the data files are in another package `data_dvsdk_3_01_00_10.tar.gz`
+      * docs - lies, all lies (there aren't any docs there)
+      * examples - more lies (attempts to load dvsdk_demos_3_01_00_13/omap3530/loadmodules.sh from the wrong location)
+      * kernel_binaries - more lies (cmemk.ko, dsplinkk.ko, lpm_omap3530.ko, sdmak.ko provided, but no reference to a kernel version)
+        * build the correctly versioned modules yourself with `bitbake linux-omap-psp ti-dsplink ti-linuxutils`
+      * Makefile
+      * Rules.make
+        * **Edit this** and change it to match your installation 
+          * `DVSDK_INSTALL_DIR=$(HOME)/dvsdk/dvsdk_3_01_00_10`
+          * `CODEGEN_INSTALL_DIR=/opt/TI/C6000CGT6.1.12`
+          * `OMAP3503_SDK_INSTALL_DIR=$(HOME)/AM35x-OMAP35x-PSP-SDK-03.00.01.06` - you won't actually need this with gumstix
+          * `CSTOOL_DIR=${OVEROTOP}/tmp/cross/armv7a`
+          * `CSTOOL_PREFIX=$(CSTOOL_DIR)/bin/arm-angstrom-linux-gnueabi-`
+      * targetfs
+      * uninstall
 
-If you've been developing not realizing what git is, now would be a good time to update your repository with `git fetch` because you'll need the linux-omap-psp kernel that was just recently merged into the mainstream overo branch.
+  * [TI-C6x-CGT-v6.1.12.bin](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/dvsdk/DVSDK_3_00/latest/index_FDS.html) [local](/files/TI-C6x-CGT-v6.1.12.bin)
 
-    ~/overo-oe/org.openembedded.dev
-    git fetch origin
-    git pull origin overo
+    cd ~/Downloads
+    ./dvsdk_3_01_00_10_Setup.bin # installs to ~/dvsdk
+    ./cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin # DO NOT accept the default, Install to ~/dvsdk/dvsdk_3_01_00_10/cs1omap3530
+    sudo ./ti_cgt_c6000_6.1.12_setup_linux_x86.bin # Installs to /opt/TI/C6000CGT6.1.12
+    export C6X_C_DIR=/opt/TI/C6000CGT6.1.12/include:/opt/TI/C6000CGT6.1.12/lib
+    echo "export C6X_C_DIR=/opt/TI/C6000CGT6.1.12/include:/opt/TI/C6000CGT6.1.12/lib" >> ~/.bashrc
 
-Next you can make a feedble attempt to instal the bitbake packages you'll need.
+    tar xf data_dvsdk_3_01_00_10.tar.gz -C ~/dvsdk/dvsdk_3_01_00_10/clips/
+    tar xf AM35x-OMAP35x-PSP-SDK-03.00.01.06.tar.gz -C ~/
+    cd ~/AM35x-OMAP35x-PSP-SDK-03.00.01.06/src/kernel/
+    tar xf linux-03.00.01.06.tar.gz
+    cd -
+    cd ~/AM35x-OMAP35x-PSP-SDK-03.00.01.06/src/u-boot/
+    tar xf u-boot-03.00.01.06.tar.gz
+    tar xf 
+    
+    cd ~/dvsdk/dvsdk_3_01_00_10
+    make help
+    make clean
+    make
+
+Hmm... that failed miserably...
+
+    cd ${OVEROTOP}/tmp/cross/armv7a/bin
+    ls | cut -d'-' -f5 | while read COMP do
+      ln -s arm-angstrom-linux-gnueabi-${COMP} arm-none-linux-gnueabi-${COMP} 
+    done
+    cd ~/dvsdk/dvsdk_3_01_00_10
+    make dspllnk_samples
+
+Not as miserable, but I don't know if it was useful either...
+
+    make everything
+
 
     bitbake -c clean linux-omap-psp
     bitbake -c clean ti-dsplink
     bitbake -c clean ti-linuxutils
-    
-    bitbake linux-omap-psp
-    bitbake ti-dsplink
-    bitbake ti-linuxutils
+    bitbake -c clean ti-dvsdk-demos
+
+    bitbake linux-omap-psp # Downloads `git_arago-project.org.git.people.sriram.ti-psp-omap.git_a6bad4464f985fdd3bed72e1b82dcbfc004d7869.tar.gz`
+    bitbake ti-dsplink # Downloads `dsplink_linux_1_65_00_02.tar.gz`
+    bitbake ti-linuxutils # Downloads `linuxutils_2_25_01_06.tar.gz`
+    bitbake ti-dvsdk-demos
 
 You should be able to build the kernel just fine, but you'll need extra files from TI.
 I'm not sure which all of these are needed, but here are some links to files that will prove useful.
@@ -33,7 +100,24 @@ I'm not sure which all of these are needed, but here are some links to files tha
   * [AES codec](http://focus.ti.com/docs/toolsw/folders/print/c64xpluscrypto.html)
   * [OMAP3530 Application Processor](http://focus.ti.com/docs/prod/folders/print/omap3530.html)
   * [OMAP3530 Datasheet](http://www.ti.com/litv/pdf/sprs507f)
+  * [OMAP DVSDK Getting Started](http://processors.wiki.ti.com/index.php/GSG:_OMAP35x_DVEVM_Software_Setup#Installing_the_Software)
 
+Building DVSDK
+======
+
+  * [Rebuilding the DVSDK software for the target](http://processors.wiki.ti.com/index.php/GSG:_OMAP35x_DVEVM_Software_Setup#Rebuilding_the_DVSDK_software_for_the_target)
+
+What we might need
+======
+  * [data_dvsdk_3_01_00_10.tar.gz (direct link)](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/dvsdk/DVSDK_3_00/latest/exports/data_dvsdk_3_01_00_10.tar.gz)
+  * [cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/dvsdk/DVSDK_3_00/latest/index_FDS.html) [local](/files/cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin)
+
+What we don't need
+=======
+
+  * [codesoucery_tools (direct link)](http://www.codesourcery.com/sgpp/lite/arm/portal/package4571/public/arm-none-linux-gnueabi/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2) - This is TI's version of OpenEmbedded's `gcc-cross` which contains `arm-none-gnueabi-gcc` and friends. However, if you want to go all the way with TI's setup, it may be useful. [local](/files/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2)
+  * [AM35x-OMAP35x-PSP-SDK-03.00.01.06.tgz](http://software-dl.ti.com/dsps/dsps_public_sw/psp/LinuxPSP/OMAP_03_00/03_00_01_06/index_FDS.html) [local](/files/AM35x-OMAP35x-PSP-SDK-03.00.01.06.tgz) - Documentation found in `AM35x-OMAP35x-PSP-SDK-##.##.##.##/docs/omap3530/UserGuide-##.##.##.##.pdf`, once extracted. This is similar to the Overo image.
+  * MLO, boot_lcd.scr, boot_dvi.scr, sdimage_dvsdk_3_01_00_10.tar.gz - These are specific for the DVEVM board.
 
 linux-omap-psp
 ==============
@@ -140,7 +224,7 @@ cmemk.ko
 Child Packages
 ==============
 
-A helpful FYI: Those two packages contain all of these:
+A helpful FYI: Those two packages (ti-linuxutils, ti-dsplink) contain all of these:
 
     ./tmp/deploy/glibc/ipk/overo/
       kernel-firmware-ti-3410_2.6.33-r80.5_overo.ipk
@@ -191,6 +275,52 @@ A helpful FYI: Those two packages contain all of these:
       ti-xdctools-dev_3_16_01_27-r2.5_overo.ipk
       ti-xdctools-sourcetree_3_16_01_27-r2.5_overo.ipk
       ti-xdctools_3_16_01_27-r2.5_overo.ipk
+
+The individual bitbake files are these:
+
+    find ${OVEROTOP}/org.openembedded.dev/recipes/ | grep '\<ti\>' | grep bb | cut -d'/' -f3-99 | cut -d'_' -f1 | sort -u
+    org.openembedded.dev/recipes/
+      firmwares/firmware-ti-wl1251.bb
+      images/ti-codec-engine-test-image.bb
+      images/ti-demo-x11-image.bb
+      julius/ti-julius-demo
+      tasks/task-gstreamer-ti.bb
+      ti/am-benchmarks
+      ti/am-sysinfo
+      ti/bitblit
+      ti/gstreamer-ti
+      ti/matrix-gui
+      ti/matrix-gui-common
+      ti/matrix-gui-e
+      ti/matrix-tui
+      ti/ti-audio-soc-example
+      ti/ti-biospsp
+      ti/ti-biosutils
+      ti/ti-cgt6x
+      ti/ti-codec-engine
+      ti/ti-codecs-dm355
+      ti/ti-codecs-dm365
+      ti/ti-codecs-dm6446
+      ti/ti-codecs-dm6467
+      ti/ti-codecs-omap3530
+      ti/ti-codecs-omapl137
+      ti/ti-codecs-omapl138
+      ti/ti-devshell.bb
+      ti/ti-dm355mm-module
+      ti/ti-dm365mm-module
+      ti/ti-dmai
+      ti/ti-dspbios
+      ti/ti-dsplib
+      ti/ti-dsplink
+      ti/ti-dvsdk-demos
+      ti/ti-edma3lld
+      ti/ti-framework-components
+      ti/ti-linuxutils
+      ti/ti-local-power-manager
+      ti/ti-msp430-chronos
+      ti/ti-sysbios
+      ti/ti-xdais
+      ti/ti-xdctools
 
 Errors
 ======
