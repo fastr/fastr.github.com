@@ -16,6 +16,11 @@ Current Status
 
 It compiles!!! Now I just have to finish packaging it as a bitbake recipe.
 
+  1. Copy the recipe below and put it in the location specified.
+  2. run `bitbake node`
+  3. once it fails, go in `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/node-0.1.104-r0/node-0.1.104/` and edit the files by hand.
+  4. `bitbake node` again. It should succeed.
+  5. copy the raw `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/nodejs-0.1.104-r0/node-v0.1.104/node` whereever you need it.
 
 Files
 =====
@@ -64,7 +69,7 @@ Same as above with one major change:
 
     DEPENDS = "openssl-static"
 
-`./node-v0.1.104/deps/libev/wscript`
+`./node-v0.1.104/deps/libev/wscript` in the temp builddir
 ---------------------
 
 This will become `files/libev-arm-cross.patch` once packaged.
@@ -91,7 +96,7 @@ Currently you can modify the failed build in place from `${OVEROTOP}/tmp/work/ar
        have_librt = conf.check(lib='rt', uselib_store='RT')
        if have_librt:
 
-./node-v0.1.104/wscript
+`./node-v0.1.104/wscript` in the temp builddir
 ---------------------
 
 This will become `files/node-arm-cross.patch` once packaged.
