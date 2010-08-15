@@ -90,7 +90,7 @@ Same as above with one major change:
        if bld.env['DEST_CPU'] == 'x86_64':
          arch = "arch=x64"
      
-    +  if bld.env['DEST_CPU'] == 'arm':
+    +  if bld.env['AR'] == 'arm-angstrom-linux-gnueabi-ar': # TODO use -1 != str.find('arm-xxx-linux-gnueabi)
     +    arch = "arch=arm"
     +  
        if variant == "default":
