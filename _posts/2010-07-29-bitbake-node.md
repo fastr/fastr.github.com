@@ -6,7 +6,6 @@ updated_at: 2010-08-14
 ---
 Goal
 ====
-
 I would like to be able to cross-compile nodejs using bitbake. (I've already got it [natively compiled on the Gumstix Overo](/articles/bitbake-node.html))
 
     bitbake node
@@ -17,12 +16,17 @@ Current Status
 
 It compiles!!! Now I just have to finish packaging it as a bitbake recipe.
 
+
 Files
 =====
 
 These are the files I have so far. They still need a few tweaks before I create a bitbake recipe.
 
-node_0.1.104.bb
+They do compile and leave the useable `node` binary in `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/nodejs-0.1.104-r0/node-v0.1.104/node`.
+
+They don't create the `${OVEROTOP}/tmp/deploy/glibc/ipk/armv7a/node_0.1.104.ipk` that you would hope for... yet.
+
+`${OVEROTOP}/user.collection/node/node_0.1.104.bb`
 -----------------
 
     DESCRIPTION = "nodeJS Evented I/O for V8 JavaScript"
@@ -31,6 +35,8 @@ node_0.1.104.bb
     SRC_URI = " \
     http://nodejs.org/dist/node-v${PV}.tar.gz \
     "
+    #file://libev-arm-crass.patch;apply=yes \
+    #file://node-arm-cross.patch;apply=yes \
     SRC_URI[md5sum] = "907fa1e0a2f1f0c3df5efc97fd05a7d2"
     SRC_URI[sha256sum] = "a1c776f44bc07305dc0e56df17cc3260eaafa0394c3b06c27448ad85bec272df"
     S = "${WORKDIR}/node-v${PV}"
@@ -51,15 +57,19 @@ node_0.1.104.bb
     FILES_${PN} = "${bindir}/node"
 
 
-node-static_0.1.104.bb
+`${OVEROTOP}/user.collection/node/node-static_0.1.104.bb`
 -----------------
 
 Same as above with one major change:
 
     DEPENDS = "openssl-static"
 
-./node-v0.1.104/deps/libev/wscript
+`./node-v0.1.104/deps/libev/wscript`
 ---------------------
+
+This will become `files/libev-arm-cross.patch` once packaged.
+
+Currently you can modify the failed build in place from `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/nodejs-0.1.104-r0/`
 
     --- a/deps/libev/wscript
     +++ b/deps/libev/wscript
@@ -83,6 +93,10 @@ Same as above with one major change:
 
 ./node-v0.1.104/wscript
 ---------------------
+
+This will become `files/node-arm-cross.patch` once packaged.
+
+Currently you can modify the failed build in place from `${OVEROTOP}/tmp/work/armv7a-angstrom-linux-gnueabi/nodejs-0.1.104-r0/`
 
     --- a/wscript
     +++ b/wscript
