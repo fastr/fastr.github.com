@@ -327,7 +327,7 @@ Add an ssh key
   1. visit your [Account Page](https://github.com/account)
   2. click `Add another public key`
   3. the Title may be any name you wish
-  4. `cat ~/.ssh/id_rsaa.pub || ( ssh-keygen && cat ~/.ssh/id_rsa.pub )`
+  4. `cat ~/.ssh/id_rsaa.pub 2>/dev/null || ( ssh-keygen && cat ~/.ssh/id_rsa.pub )`
   5. past the output from the line above into the Key
 
 Setup Git

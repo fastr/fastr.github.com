@@ -28,7 +28,7 @@ gitosis users
 
 Create your own ssh key rather than continuing to share a single key with multiple people.
 
-    ssh-keygen
+    ssh-keygen -f ~/.ssh/id_rsa -N ''
     # confirm and continue
 
 Move that new key to a temporary shared location

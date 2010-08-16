@@ -24,7 +24,11 @@ A note about clients
 
 For each client you will need to create an ssh key (if you don't already have one).
 
-    ssh-keygen
+    KEYFILE=~/.ssh/id_rsa
+    if [ ! -f "${KEYFILE}" ]
+    then
+      ssh-keygen -f ${KEYFILE} -N ''
+    fi
 
 Each client will also need to have it's public key listed for gitosis
 

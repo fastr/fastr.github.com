@@ -1,16 +1,127 @@
 ---
 layout: article
-title: ti dsplink on OpenEmbedded
+title: Installing OMAP DVSDK on Gumstix Overo
 categories: unfinished dvsdk bitbake
 updated_at: 2010-07-26
 ---
+Goal
+====
+
+Get the TI demos running on the gumstix.
+
+TI's DVSDK & EVM packages
+=======
+
 According to TI's [Getting Started Guide: OMAP35x DVEVM Software Setup](http://processors.wiki.ti.com/index.php/GSG:_OMAP35x_DVEVM_Software_Setup#Installing_the_DVSDK_Software_.28DVSDK_version_3.01.00.09_onwards.29), you'll need the following packages:
 
   * [dvsdk_3_01_00_10_Setup.bin](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/dvsdk/DVSDK_3_00/latest/index_FDS.html) [local](/files/dvsdk_3_01_00_10_Setup.bin)
   * [TI-C6x-CGT-v6.1.12.bin](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/dvsdk/DVSDK_3_00/latest/index_FDS.html) [local](/files/TI-C6x-CGT-v6.1.12.bin)
+  * [data_dvsdk_3_01_00_10.tar.gz (direct link)](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/dvsdk/DVSDK_3_00/latest/exports/data_dvsdk_3_01_00_10.tar.gz)
+  * [cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/dvsdk/DVSDK_3_00/latest/index_FDS.html) [local](/files/cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin)
+  * [AM35x-OMAP35x-PSP-SDK-03.00.01.06.tgz](http://software-dl.ti.com/dsps/dsps_public_sw/psp/LinuxPSP/OMAP_03_00/03_00_01_06/index_FDS.html) [local](/files/AM35x-OMAP35x-PSP-SDK-03.00.01.06.tgz) - Documentation found in `AM35x-OMAP35x-PSP-SDK-##.##.##.##/docs/omap3530/UserGuide-##.##.##.##.pdf`, once extracted. This is similar to the Overo image.
+  * [codesoucery_tools (direct link)](http://www.codesourcery.com/sgpp/lite/arm/portal/package4571/public/arm-none-linux-gnueabi/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2) - This is TI's version of OpenEmbedded's `gcc-cross` which contains `arm-none-gnueabi-gcc` and friends. However, if you want to go all the way with TI's setup, it may be useful. [local](/files/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2)
 
-dvsdk v3
+For the sake of trying things the TI way first, I might recommend. From those packages, we won't actually use `codesourcery_tools` since gumstix provides `gcc-cross`, which fulfills the same function. 
+
+Installing
+=======
+
+Unpacking
+-------
+
+You'll need to unpackage the downloads in specific locations and also unpackage some of the sub-packages.
+Assuming that you've downloaded all of the above into `~/Downloads`:
+
+    cd ~/Downloads
+    ./dvsdk_3_01_00_10_Setup.bin # installs to ~/dvsdk
+    ./cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin # Installs to ~/cs1omap3530
+    ln -s ~/cs1omap3530/cs1omap3530_1_01_00 ~/dvsdk/dvsdk_3_01_00_10/cs1omap3530_1_01_00
+    sudo ./ti_cgt_c6000_6.1.12_setup_linux_x86.bin # Installs to /opt/TI/C6000CGT6.1.12
+    export C6X_C_DIR=/opt/TI/C6000CGT6.1.12/include:/opt/TI/C6000CGT6.1.12/lib
+    echo "export C6X_C_DIR=/opt/TI/C6000CGT6.1.12/include:/opt/TI/C6000CGT6.1.12/lib" >> ~/.bashrc
+    tar xf data_dvsdk_3_01_00_10.tar.gz -C ~/dvsdk/dvsdk_3_01_00_10/clips/
+    tar xf AM35x-OMAP35x-PSP-SDK-03.00.01.06.tar.gz -C ~/
+    cd ~/AM35x-OMAP35x-PSP-SDK-03.00.01.06/src/kernel/
+    tar xf linux-03.00.01.06.tar.gz
+    cd ~/AM35x-OMAP35x-PSP-SDK-03.00.01.06/src/u-boot/
+    tar xf u-boot-03.00.01.06.tar.gz
+    cd ~/AM35x-OMAP35x-PSP-SDK-03.00.01.06/src/examples
+    tar xf examples.tar.gz
+
+Now that everything is installed you must configure `~/dvsdk/dvsdk_3_01_00_10/Rules.make`.
+Here's an example of what the values that should probably be chaged:
+
+    * `DVSDK_INSTALL_DIR=$(HOME)/dvsdk/dvsdk_3_01_00_10`
+    * `CODEGEN_INSTALL_DIR=/opt/TI/C6000CGT6.1.12`
+    * `OMAP3503_SDK_INSTALL_DIR=$(HOME)/AM35x-OMAP35x-PSP-SDK-03.00.01.06`
+    * `CSTOOL_DIR=${OVEROTOP}/tmp/cross/armv7a`
+    * `CSTOOL_PREFIX=$(CSTOOL_DIR)/bin/arm-angstrom-linux-gnueabi-`
+
+Because some of the packages don't respect CSTOOL_PREFIX as they ought, also link the OpenEmbedded toolchain to `arm-none-linux-gnueabi-`
+
+    cd ${OVEROTOP}/tmp/cross/armv7a/bin
+    ls | cut -d'-' -f5-99 | while read COMP
+    do
+      ln -s arm-angstrom-linux-gnueabi-${COMP} arm-none-linux-gnueabi-${COMP} 
+    done
+
+To test that everything is installed correctly, try to compile all of the TI packages (probably takes 30 min+).
+    
+    cd ~/dvsdk/dvsdk_3_01_00_10
+    make help
+    make clobber # super clean
+    make everything
+    make
+
+Using the overo-patched TI PSP Kernel
+========
+
+Now that everything is installed correctly enough to compile the vanilla TI demos, let's get the overo psp kernel
+
+
+Get `linux-omap-psp` (or any omap-psp based-branch of the kernel) downloaded and patched for the overo.
+
+    cd ${OVEROTOP}
+    bitbake -c configure linux-omap-psp # Downloads and patches `git_arago-project.org.git.people.sriram.ti-psp-omap.git_a6bad4464f985fdd3bed72e1b82dcbfc004d7869.tar.gz`
+    ls ${OVEROTOP}/tmp/work/overo-angstrom-linux-gnueabi/linux-omap-psp-2.6.32-r81+gitra6bad4464f985fdd3bed72e1b82dcbfc004d7869/git
+
+Right now `/AM35x-OMAP35x-PSP-SDK-03.00.01.06/src/kernel/linux-03.00.01.06` is being used as the kernel dir in `Rules.make`.
+Change that to the desired kernel.
+
+    echo ${OVEROTOP}/tmp/work/overo-angstrom-linux-gnueabi/linux-omap-psp-2.6.32-r81+gitra6bad4464f985fdd3bed72e1b82dcbfc004d7869/git
+    cd ~/dvsdk/dvsdk_3_01_00_10/
+    vim Rules.make
+    #LINUXKERNEL_INSTALL_DIR=$(HOME)/overo-oe/tmp/work/overo-angstrom-linux-gnueabi/linux-omap-psp-2.6.32-r81+gitra6bad4464f985fdd3bed72e1b82dcbfc004d7869/git
+
+Also, the `Makefile` is configured to build with the `omap3_evm_defconfig`, but we want the overo_defconfig
+
+    cd ~/dvsdk/dvsdk_3_01_00_10/
+    vim Makefile
+    # edit near "ifeq ($(PLATFORM),omap3530)"
+    # LINUXKERNEL_CONFIG=overo_defconfig
+
+And try to compile the kernel now
+
+    make linux_clean
+    make linux
+    
+Running the demos
+========
+
+Basically looking for something that copies data in and out of the codec.... not finished
+
+
+Appendix: Examining the TI Packages
+========
+
+dvsdk v3 (dvsdk_3_01_00_10_Setup.bin & data_dvsdk_3_01_00_10.tar.gz)
 --------
+
+**Unpacking**:
+
+  1. run `./dvsdk_3_01_00_10_Setup.bin` and unpack as `~/dvsdk`
+  2. run `tar xf data_dvsdk_3_01_00_10.tar.gz -C ~/dvsdk/dvsdk_3_01_00_10/clips`
+  3. run `ls ~/dvsdk/dvsdk_3_01_00_10` to see that the results are as expected
 
 This package contains these other packages:
 
@@ -21,7 +132,6 @@ This package contains these other packages:
   * codec_engine_2_25_02_11
   * dmai_2_05_00_12
   * dsplink_linux_1_65_00_02
-  * dvsdk_3_01_00_10_releasenotes.pdf
   * dvsdk_demos_3_01_00_13
   * dvtb_4_20_05
   * edma3_lld_01_11_00_03
@@ -35,7 +145,7 @@ This package contains these other packages:
 It also contains these directories:
 
   * bin - check.sh info.sh
-  * clips - the data files are in another package `data_dvsdk_3_01_00_10.tar.gz`
+  * clips - the data files are in the package **`data_dvsdk_3_01_00_10.tar.gz`**
   * docs - lies, all lies (there aren't any docs there)
   * examples - has an example `loadmodules.sh`
   * kernel_binaries - pre-built binaries for the provided kernel
@@ -43,8 +153,9 @@ It also contains these directories:
 
 And these files:
 
+  * dvsdk_3_01_00_10_releasenotes.pdf
   * Makefile - `make help` to find out
-  * Rules.make - change this to match your configuration
+  * Rules.make - **edit this file** to match your configuration. Example:
     * `DVSDK_INSTALL_DIR=$(HOME)/dvsdk/dvsdk_3_01_00_10`
     * `CODEGEN_INSTALL_DIR=/opt/TI/C6000CGT6.1.12`
     * `OMAP3503_SDK_INSTALL_DIR=$(HOME)/AM35x-OMAP35x-PSP-SDK-03.00.01.06`
@@ -52,54 +163,71 @@ And these files:
     * `CSTOOL_PREFIX=$(CSTOOL_DIR)/bin/arm-angstrom-linux-gnueabi-`
   * uninstall
 
-cs1omap3530 v1
+
+cs1omap3530 v1 (cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin)
 ---------
 
-This should be unpacked to `~/dvsdk/dvsdk_3_01_00_10/cs1omap3530_1_01_00`
+**Unpacking**:
+
+  1. run `./cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin` and unpack to `~/cs1omap3530/`
+  2. run `mv ~/cs1omap3530/cs1omap3530_1_01_00 ~/dvsdk/dvsdk_3_01_00_10/cs1omap3530_1_01_00`
+  3. run `ls ~/dvsdk/dvsdk_3_01_00_10/cs1omap3530_1_01_00` to see that the results are as expected
+
+This package contains an example *codec server*
+
+  * `~/dvsdk/dvsdk_3_01_00_10/cs1omap3530_1_01_00/`
+    * config.bld
+    * cs1omap3530_release_notes.htm
+    * csRules.mak
+    * Makefile
+  * `~/dvsdk/dvsdk_3_01_00_10/cs1omap3530_1_01_00/packages/ti/sdo/codecs/`
+    * aachedec
+    * deinterlacer
+    * g711dec
+    * g711enc
+    * h264dec
+    * h264enc
+    * jpegdec
+    * jpegenc
+    * mpeg2dec
+    * mpeg4dec
+    * mpeg4enc
+  * `~/dvsdk/dvsdk_3_01_00_10/cs1omap3530_1_01_00/packages/ti/sdo/server/cs/`
+    * bin
+    * codec.cfg
+    * docs
+    * link.cmd
+    * main.c
+    * package
+    * package.bld
+    * package.mak
+    * package.xdc
+    * package.xs
+    * server.cfg
+    * server.tcf
 
 TI-C6x-CGT v6
 ---------
 
-These are the DSP compiler tools
+**Unpacking**:
 
-Installing
-=======
+  1. run `./TI-C6x-CGT-v6.1.12.bin` and unpack as `/opt/TI/C6000CGT6.1.12`
+  2. run `ls /opt/TI/C6000CGT6.1.12` to see that the results are as expected
 
-    cd ~/Downloads
-    ./dvsdk_3_01_00_10_Setup.bin # installs to ~/dvsdk
-    ./cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin # Installs to ~/cs1omap3530
-    ln -s ~/cs1omap3530/cs1omap3530_1_01_00 ~/dvsdk/dvsdk_3_01_00_10/cs1omap3530_1_01_00
-    sudo ./ti_cgt_c6000_6.1.12_setup_linux_x86.bin # Installs to /opt/TI/C6000CGT6.1.12
-    export C6X_C_DIR=/opt/TI/C6000CGT6.1.12/include:/opt/TI/C6000CGT6.1.12/lib
-    echo "export C6X_C_DIR=/opt/TI/C6000CGT6.1.12/include:/opt/TI/C6000CGT6.1.12/lib" >> ~/.bashrc
+This package contains the DSP Toolchain: C6000 CodeGen Tools
 
-    tar xf data_dvsdk_3_01_00_10.tar.gz -C ~/dvsdk/dvsdk_3_01_00_10/clips/
-    tar xf AM35x-OMAP35x-PSP-SDK-03.00.01.06.tar.gz -C ~/
-    cd ~/AM35x-OMAP35x-PSP-SDK-03.00.01.06/src/kernel/
-    tar xf linux-03.00.01.06.tar.gz
-    cd ~/AM35x-OMAP35x-PSP-SDK-03.00.01.06/src/u-boot/
-    tar xf u-boot-03.00.01.06.tar.gz
-    cd ~/AM35x-OMAP35x-PSP-SDK-03.00.01.06/src/examples
-    tar xf examples.tar.gz
-    
-    cd ~/dvsdk/dvsdk_3_01_00_10
-    make help
-    make clean
-    make
+  * bin - abs6x, ap6x, asm6x, ci6x, clist6x, dem6x, embed6x, ilk6x, lnk6x, load6xexe, nm6x, opt6x, pprof6x, strip6x, acp6x, ar6x, cg6x, cl6x, cmp6x, dis6x, hex6x, libinfo6x, load6x, mk6x, ofd6x, pdd6x, spkc6x.dll, xref6x
+  * DefectHistory.txt
+  * include - access.h, cctype, cpp_inline_math.h, cstring, fastmath67x.h, hash_map, iostream.h, linkage.h, mathl.h, rope, stddef.h, string, valarray, xiosbase, xmemory algorithm, cerrno, cpy_tbl.h, ctime, file.h, hash_set, _isfuncdcl.h, list, memory, set, stdexcept, string.h, vector, xlocale, xstddef assert.h, cfloat, csetjmp, ctype.h, float.h, inttypes.h, _isfuncdef.h, locale, new, setjmp.h, stdint.h, strstream, wchar.h, xlocinfo, xstring bitset, ciso646, csignal, cwchar, _fmt_specifier.h, iomanip, iso646.h, locale.h, new.h, signal.h, stdio.h, strstream.h, wchar.hx, xlocinfo.h, xtree c60asm.i, climits, cstdarg, cwctype, fstream, iomanip.h, istream, _lock.h, numeric, slist, stdiostream.h, time.h, wctype.h, xlocmes, xutility c6x.h, clocale, cstddef, deque, fstream.h, ios, iterator, map, ostream, sstream, stdlib.h, typeinfo, xcomplex, xlocmon, xwcc.h cargs.h, cmath, cstdio, errno.h, functional, iosfwd, limits, mathf.h, pprof.h, stack, stl.h, unaccess.h, xdebug, xlocnum, ymath.h cassert, complex, cstdlib, exception, gsm.h, iostream, limits.h, math.h, queue, stdarg.h, streambuf, utility, xhash, xloctime, yvals.h
+  * lib - fastmath67xe.lib, libc.a, rts6200_eh.lib, rts6400e_eh.lib, rts6400.lib, rts64pluse.lib, rts6700_eh.lib, rts6740e_eh.lib, rts6740.lib, rts67pluse.lib, fastmath67x.lib, lnk.cmd, rts6200e.lib, rts6400_eh.lib, rts64pluse_eh.lib, rts64plus.lib, rts6700e.lib, rts6740_eh.lib, rts67pluse_eh.lib, rts67plus.lib, fastmath67x.src, rts6200e_eh.lib, rts6200.lib, rts6400e.lib, rts64plus_eh.lib, rts6700e_eh.lib, rts6700.lib, rts6740e.lib, rts67plus_eh.lib, rtssrc.zip
+  * LINKER_README.txt
+  * man
+  * README.txt
+  * uninstall_cgt_c6000.bin
 
-Hmm... that failed miserably...
 
-    cd ${OVEROTOP}/tmp/cross/armv7a/bin
-    ls | cut -d'-' -f5-99 | while read COMP
-    do
-      ln -s arm-angstrom-linux-gnueabi-${COMP} arm-none-linux-gnueabi-${COMP} 
-    done
-    cd ~/dvsdk/dvsdk_3_01_00_10
-    make dspllnk_samples
-
-Not as miserable, but I don't know if it was useful either...
-
-    make everything
+Scratchpad (unorganized, unfinished)
+==========
 
 
     bitbake -c clean linux-omap-psp
@@ -129,16 +257,9 @@ Building DVSDK
 
   * [Rebuilding the DVSDK software for the target](http://processors.wiki.ti.com/index.php/GSG:_OMAP35x_DVEVM_Software_Setup#Rebuilding_the_DVSDK_software_for_the_target)
 
-What we might need
-======
-  * [data_dvsdk_3_01_00_10.tar.gz (direct link)](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/dvsdk/DVSDK_3_00/latest/exports/data_dvsdk_3_01_00_10.tar.gz)
-  * [cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/dvsdk/DVSDK_3_00/latest/index_FDS.html) [local](/files/cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin)
-
 What we don't need
 =======
 
-  * [codesoucery_tools (direct link)](http://www.codesourcery.com/sgpp/lite/arm/portal/package4571/public/arm-none-linux-gnueabi/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2) - This is TI's version of OpenEmbedded's `gcc-cross` which contains `arm-none-gnueabi-gcc` and friends. However, if you want to go all the way with TI's setup, it may be useful. [local](/files/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2)
-  * [AM35x-OMAP35x-PSP-SDK-03.00.01.06.tgz](http://software-dl.ti.com/dsps/dsps_public_sw/psp/LinuxPSP/OMAP_03_00/03_00_01_06/index_FDS.html) [local](/files/AM35x-OMAP35x-PSP-SDK-03.00.01.06.tgz) - Documentation found in `AM35x-OMAP35x-PSP-SDK-##.##.##.##/docs/omap3530/UserGuide-##.##.##.##.pdf`, once extracted. This is similar to the Overo image.
   * MLO, boot_lcd.scr, boot_dvi.scr, sdimage_dvsdk_3_01_00_10.tar.gz - These are specific for the DVEVM board.
 
 linux-omap-psp

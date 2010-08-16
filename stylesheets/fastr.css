@@ -40,3 +40,15 @@ pre {
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
 }
+div > ul {
+  background-color: #EEE;
+}
+div > ol {
+  background-color: #FFD;
+  box-shadow: 5px 5px 5px #888;
+  -webkit-box-shadow: 2px 2px 2px #888;
+  -moz-box-shadow: 5px 5px 5px #888;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
