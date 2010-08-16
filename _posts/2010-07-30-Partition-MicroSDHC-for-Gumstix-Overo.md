@@ -2,11 +2,13 @@
 layout: article
 title: Partition MicroSDHC for Gumstix Overo
 categories: u-boot gumstix
-updated_at: 2010-07-30
+updated_at: 2010-08-16
 ---
 
 Goal
 ====
+
+UPDATE: fixed a bug with the number of cylinders. Now cards larger than 2gb will register their full size.
 
 A script that can be run by a someone not familiar with the instrinsics of the Gumstix Overo to create a boot-image-ready microSDHC card of any size.
 
@@ -93,7 +95,7 @@ It may be run on the Gumstix Overo or on a system with an appropriate microSDHC 
     p
     2
     6
-    $CYL
+    
     w
     EOF
     # The return of this process is almost always false due to that the kernel cannot resync the
