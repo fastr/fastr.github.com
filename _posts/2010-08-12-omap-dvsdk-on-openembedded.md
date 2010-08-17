@@ -18,8 +18,12 @@ According to TI's [Getting Started Guide: OMAP35x DVEVM Software Setup](http://p
   * [TI-C6x-CGT-v6.1.12.bin](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/dvsdk/DVSDK_3_00/latest/index_FDS.html) [local](/files/TI-C6x-CGT-v6.1.12.bin)
   * [data_dvsdk_3_01_00_10.tar.gz (direct link)](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/dvsdk/DVSDK_3_00/latest/exports/data_dvsdk_3_01_00_10.tar.gz)
   * [cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/dvsdk/DVSDK_3_00/latest/index_FDS.html) [local](/files/cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin)
-  * [AM35x-OMAP35x-PSP-SDK-03.00.01.06.tgz](http://software-dl.ti.com/dsps/dsps_public_sw/psp/LinuxPSP/OMAP_03_00/03_00_01_06/index_FDS.html) [local](/files/AM35x-OMAP35x-PSP-SDK-03.00.01.06.tgz) - Documentation found in `AM35x-OMAP35x-PSP-SDK-##.##.##.##/docs/omap3530/UserGuide-##.##.##.##.pdf`, once extracted. This is similar to the Overo image.
-  * [codesoucery_tools (direct link)](http://www.codesourcery.com/sgpp/lite/arm/portal/package4571/public/arm-none-linux-gnueabi/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2) - This is TI's version of OpenEmbedded's `gcc-cross` which contains `arm-none-gnueabi-gcc` and friends. However, if you want to go all the way with TI's setup, it may be useful. [local](/files/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2)
+  * [AM35x-OMAP35x-PSP-SDK-03.00.01.06.tgz](http://software-dl.ti.com/dsps/dsps_public_sw/psp/LinuxPSP/OMAP_03_00/03_00_01_06/index_FDS.html) [local](/files/AM35x-OMAP35x-PSP-SDK-03.00.01.06.tgz)
+    * Documentation found in `AM35x-OMAP35x-PSP-SDK-##.##.##.##/docs/omap3530/UserGuide-##.##.##.##.pdf`, once extracted.
+    * This is similar to the Overo omap3-console-image.
+  * [codesoucery_tools (direct link)](http://www.codesourcery.com/sgpp/lite/arm/portal/package4571/public/arm-none-linux-gnueabi/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2) [local](/files/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2)
+    * This is TI's version of OpenEmbedded's `gcc-cross` which contains `arm-none-gnueabi-gcc` and friends.
+    * However, if you want to go all the way with TI's setup, it may be useful.
 
 For the sake of trying things the TI way first, I might recommend. From those packages, we won't actually use `codesourcery_tools` since gumstix provides `gcc-cross`, which fulfills the same function. 
 
@@ -57,7 +61,7 @@ Here's an example of what the values that should probably be chaged:
     * `CSTOOL_DIR=${OVEROTOP}/tmp/cross/armv7a`
     * `CSTOOL_PREFIX=$(CSTOOL_DIR)/bin/arm-angstrom-linux-gnueabi-`
 
-Because some of the packages don't respect CSTOOL_PREFIX as they ought, also link the OpenEmbedded toolchain to `arm-none-linux-gnueabi-`
+Because some of the packages don't respect `CSTOOL_PREFIX` as they ought, also link the OpenEmbedded toolchain to `arm-none-linux-gnueabi-`
 
     cd ${OVEROTOP}/tmp/cross/armv7a/bin
     ls | cut -d'-' -f5-99 | while read COMP
@@ -104,12 +108,58 @@ And try to compile the kernel now
 
     make linux_clean
     make linux
+
+And now everything
+
+    make clobber
+    make everything
+
+And lastly, copy some of the demo files out to `~/workdir/filesystem`
+
+    make install
     
 Running the demos
 ========
+[TI's Build/Run Instructions for Codec Engine Examples](http://software-dl.ti.com/dsps/dsps_public_sw/sdo_sb/targetcontent/ce/latest_2_x/examples/build_instructions.html)
 
-Basically looking for something that copies data in and out of the codec.... not finished
+Configure u-boot
+------
 
+The example loadscript for OMAP3530 assumes 80mb of OS memory, so that's what we'll set.
+
+
+  1. `reboot` the overo
+  2. press the 'any' key to enter u-boot
+  3. set it to boot with only 80mb allocated for the OS
+    * `setenv mmcargs ${mmcargs} MEM=80M mem=80M`
+    * `saveenv`
+    * `run mmcboot`
+
+Copy the dvsdk examples to the overo
+-------
+  
+  * `scp -r ~/workdir/filesys/opt GUMSTIX_IP:/`
+  * Create a hybrid `loadmodules.sh` that will load all of the modules
+    * `~/dvsdk/dvsdk_3_01_00_10/codec_engine_2_25_02_11/examples/apps/system_files/OMAP3530/loadmodules.sh`
+    * `~/workdir/filesys/opt/dvsdk/omap3530/loadmodules.sh`
+  * `~/dvsdk/dvsdk_3_01_00_10/codec_engine_2_25_02_11/examples/ti/sdo/ce/examples/`
+    * `servers/all_codecs/bin/ti_platforms_evm3530/all.x64P`
+    * `apps/video_copy/bin/ti_platforms_evm3530/app_remote.xv5T`
+    * `apps/video_copy/bin/ti_platforms_evm3530/app_local.xv5T`
+    * `apps/video_copy/in.dat`
+
+  0. run `cd /opt/dvsdk/omap3530`
+  1. Create a new file `loadmodules.works.sh`
+  2. Copy the `insmod cmemk.ko` and settings from the one in ce examples
+  3. Copy the other `insmod MODULE.ko` settings from the one in workdir
+  4. run `app_local.xv5T` - works, but may not use ARM
+  5. run `app_remote.xv5T` - doesn't work yet for me
+
+
+Modifying the examples
+=======
+
+  * `~/dvsdk/dvsdk_3_01_00_10/codec_engine_2_25_02_11/examples/xdcpaths.mak`
 
 Appendix: Examining the TI Packages
 ========
