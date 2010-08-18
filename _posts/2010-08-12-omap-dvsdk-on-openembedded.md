@@ -25,7 +25,12 @@ According to TI's [Getting Started Guide: OMAP35x DVEVM Software Setup](http://p
     * This is TI's version of OpenEmbedded's `gcc-cross` which contains `arm-none-gnueabi-gcc` and friends.
     * However, if you want to go all the way with TI's setup, it may be useful.
 
-For the sake of trying things the TI way first, I might recommend. From those packages, we won't actually use `codesourcery_tools` since gumstix provides `gcc-cross`, which fulfills the same function. 
+For the sake of getting started things, I recommend trying the TI way first. From those packages, we won't actually use `codesourcery_tools` since gumstix provides `gcc-cross`, which fulfills the same function. 
+
+You'll may also want `dsplib64plus`, `dsplib64plus.h`, `dsplib64plus.lib`
+
+    * [C64x+ DSP Library (DSPLIB) (direct link)](http://focus.ti.com/lit/sw/sprc834/sprc834.gz) [local](/files/C64x+DSPLIB-2.1-Linux-Install.bin)
+      * `C64x+DSPLIB-2.1-Linux-Install.bin` is packaged incorrectly as `sprc834.gz` when it should be `sprc834.tgz` or `sprc834.tar.gz`... or `C64x+DSPLIB-2.1-Linux-Install.tar.gz` would have been best.
 
 Installing
 =======
@@ -37,13 +42,17 @@ You'll need to unpackage the downloads in specific locations and also unpackage 
 Assuming that you've downloaded all of the above into `~/Downloads`:
 
     cd ~/Downloads
+
     ./dvsdk_3_01_00_10_Setup.bin # installs to ~/dvsdk
+
     ./cs1omap3530_setupLinux_1_01_00-prebuilt-dvsdk3.01.00.10.bin # Installs to ~/cs1omap3530
     ln -s ~/cs1omap3530/cs1omap3530_1_01_00 ~/dvsdk/dvsdk_3_01_00_10/cs1omap3530_1_01_00
     sudo ./ti_cgt_c6000_6.1.12_setup_linux_x86.bin # Installs to /opt/TI/C6000CGT6.1.12
     export C6X_C_DIR=/opt/TI/C6000CGT6.1.12/include:/opt/TI/C6000CGT6.1.12/lib
     echo "export C6X_C_DIR=/opt/TI/C6000CGT6.1.12/include:/opt/TI/C6000CGT6.1.12/lib" >> ~/.bashrc
+
     tar xf data_dvsdk_3_01_00_10.tar.gz -C ~/dvsdk/dvsdk_3_01_00_10/clips/
+
     tar xf AM35x-OMAP35x-PSP-SDK-03.00.01.06.tar.gz -C ~/
     cd ~/AM35x-OMAP35x-PSP-SDK-03.00.01.06/src/kernel/
     tar xf linux-03.00.01.06.tar.gz
@@ -51,6 +60,11 @@ Assuming that you've downloaded all of the above into `~/Downloads`:
     tar xf u-boot-03.00.01.06.tar.gz
     cd ~/AM35x-OMAP35x-PSP-SDK-03.00.01.06/src/examples
     tar xf examples.tar.gz
+    
+    mv sprc834.gz sprc834.tar.gz
+    tar xf sprc834.tar.gz
+    ./C64x+DSPLIB-2.1-Linux-Install.bin # Installs to ~/C64x+DSPLIB
+    mv ~/C64x+DSPLIB/dsplib_v210 ~/dvsdk/dvsdk_3_01_00_10/
 
 Now that everything is installed you must configure `~/dvsdk/dvsdk_3_01_00_10/Rules.make`.
 Here's an example of what the values that should probably be chaged:
