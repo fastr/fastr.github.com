@@ -19,6 +19,8 @@ CodeSourcery `arm-none-linux-gnueabi-` Toolchain
 
   * [Direct download](http://www.codesourcery.com/sgpp/lite/arm/portal/package4571/public/arm-none-linux-gnueabi/arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2)
 
+After downloading:
+
     mkdir /opt/code-sourcery/
     tar xf arm-2009q1-203-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2 -C /opt/code-sourcery/
 
