@@ -26,6 +26,7 @@ a:hover {
   -webkit-border-radius: 5px;
 }
 pre {
+  font-size: 9pt;
   width: 900px;
   padding: 5px;
   padding-right: 10px;
