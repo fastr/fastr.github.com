@@ -29,8 +29,8 @@ For the sake of getting started things, I recommend trying the TI way first. Fro
 
 You'll may also want `dsplib64plus`, `dsplib64plus.h`, `dsplib64plus.lib`
 
-    * [C64x+ DSP Library (DSPLIB) (direct link)](http://focus.ti.com/lit/sw/sprc834/sprc834.gz) [local](/files/C64x+DSPLIB-2.1-Linux-Install.bin)
-      * `C64x+DSPLIB-2.1-Linux-Install.bin` is packaged incorrectly as `sprc834.gz` when it should be `sprc834.tgz` or `sprc834.tar.gz`... or `C64x+DSPLIB-2.1-Linux-Install.tar.gz` would have been best.
+  * [C64x+ DSP Library (DSPLIB) (direct link)](http://focus.ti.com/lit/sw/sprc834/sprc834.gz) [local](/files/C64x+DSPLIB-2.1-Linux-Install.bin)
+    * `C64x+DSPLIB-2.1-Linux-Install.bin` is packaged incorrectly as `sprc834.gz` when it should be `sprc834.tgz` or `sprc834.tar.gz`... or `C64x+DSPLIB-2.1-Linux-Install.tar.gz` would have been best.
 
 Installing
 =======
