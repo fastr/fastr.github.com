@@ -9,6 +9,8 @@ Goal
 
 Get the TI demos running on the gumstix.
 
+[OMAP & DaVinci Software for Dummies](http://focus.ti.com/dsp/docs/dspsplash.tsp?contentId=52451) might be worth reading...
+
 TI's DVSDK & EVM packages
 =======
 
@@ -31,6 +33,7 @@ You'll may also want `dsplib64plus`, `dsplib64plus.h`, `dsplib64plus.lib`
 
   * [C64x+ DSP Library (DSPLIB) (direct link)](http://focus.ti.com/lit/sw/sprc834/sprc834.gz) [local](/files/C64x+DSPLIB-2.1-Linux-Install.bin)
     * `C64x+DSPLIB-2.1-Linux-Install.bin` is packaged incorrectly as `sprc834.gz` when it should be `sprc834.tgz` or `sprc834.tar.gz`... or `C64x+DSPLIB-2.1-Linux-Install.tar.gz` would have been best.
+    * I don't know how you can actually include this library in a project. I [posted to the TI forum](http://e2e.ti.com/support/embedded/f/354/p/60639/217114.aspx#217114) about it... awaiting reply.
 
 Installing
 =======
@@ -64,7 +67,10 @@ Assuming that you've downloaded all of the above into `~/Downloads`:
     mv sprc834.gz sprc834.tar.gz
     tar xf sprc834.tar.gz
     ./C64x+DSPLIB-2.1-Linux-Install.bin # Installs to ~/C64x+DSPLIB
-    mv ~/C64x+DSPLIB/dsplib_v210 ~/dvsdk/dvsdk_3_01_00_10/
+    sed -i 's,\\,/,g' ~/C64x+DSPLIB/dsplib_v210/dsplib64plus.h # convert from windows `\` to normal `/`
+    cp ~/C64x+DSPLIB/dsplib_v210/dsplib64plus.h /opt/TI/C6000CGT6.1.12/include/
+    cp -a ~/C64x+DSPLIB/dsplib_v210/src /opt/TI/C6000CGT6.1.12/include/
+    cp ~/C64x+DSPLIB/dsplib_v210/dsplib64plus.lib /opt/TI/C6000CGT6.1.12/lib/
 
 Now that everything is installed you must configure `~/dvsdk/dvsdk_3_01_00_10/Rules.make`.
 Here's an example of what the values that should probably be chaged:

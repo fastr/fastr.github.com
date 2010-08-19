@@ -38,7 +38,7 @@ Note that only whole strings are replaced thanks to `\<` and `\>`:
     if [ ! -f "${TARGET}" ]
     then
         cd "${TARGET}"
-        find ./ -type f | grep -v '.svn' | xargs sed -i "s/\<${OLD}\>/${NEW}/gi"
+        find ./ -type f | grep -v '.svn' | xargs sed -i "s/\<${OLD}\>/${NEW}/g"
     else
         sed -i "s/\<${OLD}\>/${NEW}/gi" "${TARGET}"
     fi

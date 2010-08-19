@@ -2,7 +2,7 @@
 layout: article
 title: Partition MicroSDHC for Gumstix Overo
 categories: u-boot gumstix
-updated_at: 2010-08-16
+updated_at: 2010-08-19
 ---
 
 Goal
@@ -14,11 +14,11 @@ A script that can be run by a someone not familiar with the instrinsics of the G
 
 In the case that the script runs on the overo:
 
-    ./partition-overo-sdhc.sh /dev/mmcblk0
+    sudo partition-overo-sdhc.sh /dev/mmcblk0
 
 In the case that the script runs on another Linux box:
 
-    ./partition-overo-sdhc.sh /dev/sdf
+    sudo partition-overo-sdhc.sh /dev/sdf
 
 Script
 ======
@@ -26,6 +26,8 @@ Script
 The following script automates the process described by [Gumstix Overo: Creating a bootable microSD card](http://www.gumstix.net/Setup-and-Programming/view/Overo-Setup-and-Programming/Creating-a-bootable-microSD-card/111.html)
 
 It may be run on the Gumstix Overo or on a system with an appropriate microSDHC reader.
+
+`/usr/local/bin/partition-overo-sdhc.sh`:
 
     #!/bin/bash
     #http://www.gumstix.net/Setup-and-Programming/view/Overo-Setup-and-Programming/Creating-a-bootable-microSD-card/111.html

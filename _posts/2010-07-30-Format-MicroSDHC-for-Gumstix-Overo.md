@@ -12,11 +12,11 @@ A script to run after the microSDHC has been partitioned properly for the gumsti
 
 In the case that the script runs on the overo:
 
-    ./install-overo-image-to-sdhc.sh /dev/mmcblk0
+    sudo install-overo-image-to-sdhc.sh /dev/mmcblk0
 
 In the case that the script runs on another Linux box:
 
-    ./install-overo-image-to-sdhc.sh /dev/sdf
+    sudo install-overo-image-to-sdhc.sh /dev/sdf
 
 
 Pre-Requisists
@@ -33,6 +33,8 @@ install-overo-image-to-sdhc.env
 -----------
 
 There are quite a few variables here - more than just the card to install to.
+
+`/usr/local/bin/install-overo-image-to-sdhc.env`:
 
     # About the host system
     USER=coolaj86
@@ -66,8 +68,7 @@ There are quite a few variables here - more than just the card to install to.
     export TMPDIR=/dev/shm
 
 
-install-overo-image-to-sdhc.sh
-------------------------------
+`/usr/local/bin/install-overo-image-to-sdhc.sh`:
 
 
     #!/bin/bash
