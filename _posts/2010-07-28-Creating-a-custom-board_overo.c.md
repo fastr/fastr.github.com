@@ -110,7 +110,7 @@ Testing
     make ARCH=arm CROSS_COMPILE=~/overo-oe/tmp/cross/armv7a/bin/arm-angstrom-linux-gnueabi- overo_defconfig
     make ARCH=arm CROSS_COMPILE=~/overo-oe/tmp/cross/armv7a/bin/arm-angstrom-linux-gnueabi- menuconfig
     make ARCH=arm CROSS_COMPILE=~/overo-oe/tmp/cross/armv7a/bin/arm-angstrom-linux-gnueabi- uImage modules
-    scp arch/arm/boot/uImage gumstix:/mnt/mmcblk0p1/
+    scp arch/arm/boot/uImage gumstix:/media/mmcblk0p1/
 
 TODO: use my_custom_defconfig
 
