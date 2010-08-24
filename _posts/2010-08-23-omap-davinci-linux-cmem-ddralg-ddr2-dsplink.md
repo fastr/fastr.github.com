@@ -30,6 +30,10 @@ In the case of the OMAP3530, it would not be theoretically possible to have more
 
 OS Memory
 ====
+
+Linux (the ARM OS)
+------
+
 With the default system I believe that `120MB` of memory is allocated to linux.
 
 You can find out how much OS memory is currently allocated like so:
@@ -42,10 +46,16 @@ Since the kernel takes some memory unto itself, you're likely to see less than w
 
 If you would like to modify this to be another amount, say `160MB` you should add the parameter `MEM=120M` to the u-boot `bootargs`.
 
+TI's BIOS (the DSP OS)
+-------
+
+`BIOS` refers to TI's `B? I? Operating System` - similar to `Linux` or `Windows`, but without a user interface.
+It schedules, manages memory, runs applications, and even can use device drivers.
+
 CMEM Memory
 ====
 
-http://processors.wiki.ti.com/index.php?title=CMEM_Overview
+[TI wiki CMEM Overview](http://processors.wiki.ti.com/index.php?title=CMEM_Overview)
 
 Just like disk fragmentation occurs on a filesystem, memory fragmentation occurs in `virtual memory` in the `heap`.
 
@@ -63,11 +73,21 @@ This memory is shared between the DSP and the ARM.
 DDRALGOHEAP
 ====
 
+[TI wiki DDRALGHEAP](http://processors.wiki.ti.com/index.php?title=DDRALGHEAP)
+
+This is codec memory, as allocated by `BIOS`. This should be the size
+
 DDR2
 ====
 
-This is `BIOS` memory, where `BIOS` refers to TI's `B? I? Operating System` - similar to `Linux` or `Windows`, but without a user interface.
-It schedules, manages memory, runs applications, and even can use device drivers.
+This is `BIOS` memory.
+
+Setting memory sizes
+====
+
+TODO
+
+These are set in `.tcf` and `.tci` files. The [TI wiki](http://processors.wiki.ti.com/index.php/DDRALGHEAP#DDRALGHEAP_Limitations) suggests that you don't need to know the base address - that XDC will calculate that based on the desired size - but I've only made changes by calculating everything myself.
 
 Resources
 =====
