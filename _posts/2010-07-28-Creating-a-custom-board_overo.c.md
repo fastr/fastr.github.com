@@ -55,7 +55,7 @@ Using bitbake to get the source + patches
     cd ~/overo-oe
     bitbake linux-my-custom
     cp -a ./tmp/work/overo-angstrom-linux-gnueabi/linux-my-custom-2.6.32-r81 ./linux-my-custom
-    sudo cp -a ./tmp/work/overo-angstrom-linux-gnueabi/linux-spotter-2.6.32-r81/git/.pc ./linux-my-custom/
+    sudo cp -a ./tmp/work/overo-angstrom-linux-gnueabi/linux-my-custom-2.6.32-r81/git/.pc ./linux-my-custom/
     cd ./linux-my-custom/
     git init
     git add .
