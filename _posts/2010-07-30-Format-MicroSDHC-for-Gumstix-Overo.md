@@ -25,7 +25,6 @@ Pre-Requisists
   * The host (server) system should have already run `bitbake omap3-console-image`
   * The microSDHC should have been partitioned appropriately
 
-
 Script
 ======
 
@@ -41,6 +40,7 @@ There are quite a few variables here - more than just the card to install to.
     HOST=192.168.1.20
     PORT=22
     export SCP_HOST="-P ${PORT} ${USER}@${HOST}"
+    export NET_CONF=/home/${USER}/Code/development/main/overo/etc/network/interfaces
     
     
     # Where ~/overo-oe can be found
@@ -55,7 +55,6 @@ There are quite a few variables here - more than just the card to install to.
     export UBOOT=${OVERO_PATH}/u-boot-overo.bin
     export UIMAGE=${OVERO_PATH}/uImage-${KERNEL}overo.bin
     export ROOTFS=omap3-console-image-overo.${FORMAT}
-    export NET_CONF=/home/${USER}/Code/development/main/overo/etc/network/interfaces
     
     
     # Create the environment for this script
