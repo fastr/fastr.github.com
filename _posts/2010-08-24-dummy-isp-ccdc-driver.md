@@ -265,6 +265,255 @@ These new `enum`s allow us to cleanly create new conditional branches in the `IS
       CCDC_OTHERS_VP_MEM
     };
 
+`arch/arm/mach-omap2/board-overo-camera.c`
+-----------
+
+    #include <linux/init.h>
+    #include <linux/i2c.h>
+    #include <linux/gpio.h>
+    #include <linux/mm.h>
+    #include <linux/videodev2.h>
+    #include <linux/delay.h>
+    #include <linux/platform_device.h>
+
+    #include <plat/mux.h>
+    #include <plat/board.h>
+    #include <plat/control.h>
+
+    #include <media/v4l2-int-device.h>
+    #include <media/fsr172x.h>
+
+    /* Include V4L2 ISP-Camera driver related header file */
+    #include <../drivers/media/video/omap34xxcam.h>
+    #include <../drivers/media/video/isp/ispreg.h>
+
+    #include "mux.h"
+    #include "board-overo-camera.h"
+
+    #define MODULE_NAME     "omap3beaglelmb"
+
+    #define CAM_USE_XCLKA       0
+
+    #define ISP_FSR172X_MCLK    216000000
+
+    #define LEOPARD_RESET_GPIO    98
+
+    #if defined(CONFIG_VIDEO_FSR172X) || defined(CONFIG_VIDEO_FSR172X_MODULE)
+
+    /* Arbitrary memory handling limit */
+    #define FSR172X_BIGGEST_FRAME_BYTE_SIZE PAGE_ALIGN(2048 * 1536 * 4)
+
+    // TODO can this be moved to fsr driver?
+    static struct isp_interface_config fsr172x_if_config = {
+      .ccdc_par_ser   = ISP_PARLL,
+      .dataline_shift   = 0x0,
+      .hsvs_syncdetect  = ISPCTRL_SYNC_DETECT_VSRISE,
+      .strobe     = 0x0,
+      .prestrobe    = 0x0,
+      .shutter    = 0x0,
+      .cam_mclk   = ISP_FSR172X_MCLK, // 216MHz
+      .wenlog     = ISPCCDC_CFG_WENLOG_AND, // (0 << 8)
+      .wait_hs_vs   = 2,
+      .u.par.par_bridge = 0x0, // no bridge
+      .u.par.par_clk_pol  = 0x0,
+    };
+
+    static struct v4l2_ifparm fsr172x_ifparm_s = {
+      .if_type = V4L2_IF_TYPE_RAW,
+      .u   = {
+        .raw = {
+          .frame_start_on_rising_vs = 1,
+          .bt_sync_correct  = 0,
+          .swap     = 0,
+          .latch_clk_inv    = 0,
+          .nobt_hs_inv    = 0,  /* active high */
+          .nobt_vs_inv    = 0,  /* active high */
+          .clock_min    = FSR172X_CLK_MIN, // 2.048MHz
+          .clock_max    = FSR172X_CLK_MAX, // 2.048MHz
+        },
+      },
+    };
+
+    /**
+     * @brief fsr172x_ifparm - Returns the fsr172x interface parameters
+     *
+     * @param p - pointer to v4l2_ifparm structure
+     *
+     * @return result of operation - 0 is success
+     */
+    static int fsr172x_ifparm(struct v4l2_ifparm *p)
+    {
+      if (p == NULL)
+        return -EINVAL;
+
+      *p = fsr172x_ifparm_s;
+      return 0;
+    }
+
+    #if defined(CONFIG_VIDEO_OMAP3) || defined(CONFIG_VIDEO_OMAP3_MODULE)
+    static struct omap34xxcam_hw_config fsr172x_hwc = {
+      .dev_index    = 0,
+      .dev_minor    = 0,
+      .dev_type   = OMAP34XXCAM_SLAVE_SENSOR,
+      .u.sensor.sensor_isp  = 1,
+      .u.sensor.capture_mem = FSR172X_BIGGEST_FRAME_BYTE_SIZE * 2,
+      .u.sensor.ival_default  = { 1, 10 },
+    };
+    #endif
+
+    /**
+     * @brief fsr172x_set_prv_data - Returns fsr172x omap34xx driver private data
+     *
+     * @param priv - pointer to omap34xxcam_hw_config structure
+     *
+     * @return result of operation - 0 is success
+     */
+    static int fsr172x_set_prv_data(void *priv)
+    {
+    #if defined(CONFIG_VIDEO_OMAP3) || defined(CONFIG_VIDEO_OMAP3_MODULE)
+      struct omap34xxcam_hw_config *hwc = priv;
+
+      if (priv == NULL)
+        return -EINVAL;
+
+      hwc->u.sensor = fsr172x_hwc.u.sensor;
+      hwc->dev_index = fsr172x_hwc.dev_index;
+      hwc->dev_minor = fsr172x_hwc.dev_minor;
+      hwc->dev_type = fsr172x_hwc.dev_type;
+      return 0;
+    #else
+      return -EINVAL;
+    #endif
+    }
+
+    /**
+     * @brief fsr172x_power_set - Power-on or power-off TVP5146 device
+     *
+     * @param power - enum, Power on/off, resume/standby
+     *
+     * @return result of operation - 0 is success
+     */
+    static int fsr172x_power_set(struct v4l2_int_device *s, enum v4l2_power power)
+    {
+      struct omap34xxcam_videodev *vdev = s->u.slave->master->priv;
+
+      switch (power) {
+      case V4L2_POWER_OFF:
+      case V4L2_POWER_STANDBY:
+        isp_set_xclk(vdev->cam->isp, 0, CAM_USE_XCLKA);
+        break;
+
+      case V4L2_POWER_ON:
+    #if defined(CONFIG_VIDEO_OMAP3) || defined(CONFIG_VIDEO_OMAP3_MODULE)
+        isp_configure_interface(vdev->cam->isp, &fsr172x_if_config);
+    #endif
+        break;
+
+      default:
+        return -ENODEV;
+        break;
+      }
+      return 0;
+    }
+
+    struct fsr172x_platform_data fsr172x_pdata = {
+      .master   = "omap34xxcam",
+      .power_set  = fsr172x_power_set,
+      .priv_data_set  = fsr172x_set_prv_data,
+      .ifparm   = fsr172x_ifparm,
+      /* Some interface dependent params */
+      .clk_polarity = 0, /* data clocked out on falling edge */
+      .hs_polarity  = 1, /* 0 - Active low, 1- Active high */
+      .vs_polarity  = 1, /* 0 - Active low, 1- Active high */
+    };
+
+    #endif        /* #ifdef CONFIG_VIDEO_FSR172X */
+
+
+    static int beagle_cam_probe(struct platform_device *pdev)
+    {
+      printk(KERN_INFO MODULE_NAME ": Driver registration complete \n");
+      return 0;
+    }
+
+    static int beagle_cam_remove(struct platform_device *pdev)
+    {
+      // FSR_COMMENT -  mux init on remove, but not on insert?
+      /* MUX init */
+      omap_ctrl_writew(OMAP_PIN_INPUT_PULLUP | OMAP_MUX_MODE0,
+           0x10C); /* CAM_HS */
+      omap_ctrl_writew(OMAP_PIN_INPUT_PULLUP | OMAP_MUX_MODE0,
+           0x10E); /* CAM_VS */
+      omap_ctrl_writew(OMAP_PIN_OUTPUT | OMAP_MUX_MODE0,
+           0x110); /* CAM_XCLKA */
+      omap_ctrl_writew(OMAP_PIN_INPUT_PULLUP | OMAP_MUX_MODE0,
+           0x112); /* CAM_PCLK */
+      omap_ctrl_writew(OMAP_PIN_INPUT | OMAP_MUX_MODE0,
+           0x116); /* CAM_D0 */
+      omap_ctrl_writew(OMAP_PIN_INPUT | OMAP_MUX_MODE0,
+           0x118); /* CAM_D1 */
+      omap_ctrl_writew(OMAP_PIN_INPUT | OMAP_MUX_MODE0,
+           0x11A); /* CAM_D2 */
+      omap_ctrl_writew(OMAP_PIN_INPUT | OMAP_MUX_MODE0,
+           0x11C); /* CAM_D3 */
+      omap_ctrl_writew(OMAP_PIN_INPUT | OMAP_MUX_MODE0,
+           0x11E); /* CAM_D4 */
+      omap_ctrl_writew(OMAP_PIN_INPUT | OMAP_MUX_MODE0,
+           0x120); /* CAM_D5 */
+      omap_ctrl_writew(OMAP_PIN_INPUT | OMAP_MUX_MODE0,
+           0x122); /* CAM_D6 */
+      omap_ctrl_writew(OMAP_PIN_INPUT | OMAP_MUX_MODE0,
+           0x124); /* CAM_D7 */
+      omap_ctrl_writew(OMAP_PIN_INPUT | OMAP_MUX_MODE0,
+           0x126); /* CAM_D8 */
+      omap_ctrl_writew(OMAP_PIN_INPUT | OMAP_MUX_MODE0,
+           0x128); /* CAM_D9 */
+      omap_ctrl_writew(OMAP_PIN_INPUT | OMAP_MUX_MODE0,
+           0x12A); /* CAM_D10 */
+      omap_ctrl_writew(OMAP_PIN_INPUT | OMAP_MUX_MODE0,
+           0x12C); /* CAM_D11 */
+
+      return 0;
+    }
+
+    static int beagle_cam_suspend(struct device *dev)
+    {
+      return 0;
+    }
+
+    static int beagle_cam_resume(struct device *dev)
+    {
+      return 0;
+    }
+
+    static struct dev_pm_ops beagle_cam_pm_ops = {
+      .suspend = beagle_cam_suspend,
+      .resume  = beagle_cam_resume,
+    };
+
+    static struct platform_driver beagle_cam_driver = {
+      .probe    = beagle_cam_probe,
+      .remove   = beagle_cam_remove,
+      .driver   = {
+        .name = "beagle_cam",
+        .pm = &beagle_cam_pm_ops,
+      },
+    };
+
+    /**
+     * @brief omap3beaglelmb_init - module init function. Should be called before any
+     *                          client driver init call
+     *
+     * @return result of operation - 0 is success
+     */
+    int __init omap3beaglelmb_init(void)
+    {
+      platform_driver_register(&beagle_cam_driver);
+      return 0;
+    }
+late_initcall(omap3beaglelmb_init);
+
+
 
 `include/linux/videodev2.h`
 -----------
@@ -373,23 +622,7 @@ In our driver code we will access these settings as `v4l2_ifparm`.
 `arch/arm/mach-omap2/board-overo-camera.c`
 -----------
 
-This board file and its header are the exact same as `board-omap3beagle-camera` with the exception that every occurrance of *beagle* has been replaced with *overo* and every occurance of *mt9t111* has been replaced with *fsr172x* and the following diff.
-
-    #include "board-overo-camera.h"             | #include "board-omap3beagle-camera.h"
-                        |
-    //    if (regulator_is_enabled(beagle_fsr172x_1_8v1 |     if (regulator_is_enabled(beagle_fsr172x_1_8v1
-    //      regulator_disable(beagle_fsr172x_1_8v |       regulator_disable(beagle_fsr172x_1_8v
-    //    if (regulator_is_enabled(beagle_fsr172x_1_8v2 |     if (regulator_is_enabled(beagle_fsr172x_1_8v2
-    //      regulator_disable(beagle_fsr172x_1_8v |       regulator_disable(beagle_fsr172x_1_8v
-    //    gpio_set_value(LEOPARD_RESET_GPIO, 0);        |     gpio_set_value(LEOPARD_RESET_GPIO, 0);
-    //    regulator_enable(beagle_fsr172x_1_8v1);       |     regulator_enable(beagle_fsr172x_1_8v1);
-    //    regulator_enable(beagle_fsr172x_1_8v2);       |     regulator_enable(beagle_fsr172x_1_8v2);
-    //    gpio_set_value(LEOPARD_RESET_GPIO, 1);        |     gpio_set_value(LEOPARD_RESET_GPIO, 1);
-    #if 0                   <
-    #endif                    |
-    #if 0                   <
-    #endif                    |
-
+This board file and its header are the exact same as `board-omap3beagle-camera` with the exception that every occurrance of *beagle* has been replaced with *overo* and every occurance of *mt9t111* has been replaced with *fsr172x*.
 
 Again, we'll just use `RAW`, but if we had created our own `FSR` standard, we would need to add to this list:
 

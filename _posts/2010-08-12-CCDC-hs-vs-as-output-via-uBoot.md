@@ -12,7 +12,7 @@ Configure the `cam_hs` and `cam_vs` as outputs.
 Linux Kernel
 ============
 
-I had tried this before and documented the experience somewhat as [Export-gpio-pins-on-gumstix](http://fastr.github.com/2010-08-03/Export-gpio-pins-on-gumstix.html)
+I had tried this before and documented the experience somewhat as [Export-gpio-pins-on-gumstix](/articles/Export-gpio-pins-on-gumstix.html)
 
 Later I found that although the `cam_d` lines were outputting data, the values were coming out as `0`s. There is a suspision that setting `CONFIG_OMAP3_MUX` in the kernel enables a number of other changes that may not be desired. The next step is to try via `node-devreg` and then `u-boot`.
 
