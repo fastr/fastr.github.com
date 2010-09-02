@@ -1,6 +1,6 @@
 ---
 layout: article
-title: Setting up Gumstix Overo Fire
+title: Setting up Wifi on Gumstix Overo Fire
 categories: gumstix
 updated_at: 2010-09-01
 ---
