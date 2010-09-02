@@ -17,14 +17,14 @@ Setup with the Out-of-Box system
 First Things First
 ----
 
-  # secure my gumstix from netbots (it will have a public IP)
-  passwd
+    # secure my gumstix from netbots (it will have a public IP)
+    passwd
 
-  # make vim usable
-  echo ":set nocompatible" >> /etc/vimrc
+    # make vim usable
+    echo ":set nocompatible" >> /etc/vimrc
 
-  # make the filesystem searchable with locate
-  updatedb
+    # make the filesystem searchable with locate
+    updatedb
 
 Wireless Networking
 ====
