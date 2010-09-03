@@ -4,9 +4,15 @@ title: refactor with bash
 categories: util
 updated_at: 2010-08-17
 ---
+Goal
+====
 
 Recursively replaces all occurances of `<old-string>` with `<new-string>` in `<file-or-dir>`.
 
+The real magic
+====
+
+    find ./ -type f | grep -v '.svn' | xargs sed -i "s/\<${OLD}\>/${NEW}/g"
 
 Note that only whole strings are replaced thanks to `\<` and `\>`:
 
