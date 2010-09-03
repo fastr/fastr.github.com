@@ -11,6 +11,22 @@ Get a good comparison between various SD Cards of various sizes, brands, and cla
 
 Determine if write bottlenecks are due to the Overo's data bus, or the microSDHC. 
 
+Results
+====
+
+Write and Read speeds are with booting from NAND/microSDHC
+
+    Manufacturer      Size      Class     Write Speed     Read Speed
+    ------------      ----      -----     -----------     ----------
+    
+    KingMax           8GB       10        4.7 MB/s        14.1 MB/s
+    
+    Kingston          16GB      4         4.9 MB/s        12.6 MB/s
+
+    SanDisk           16GB      2         3.1 MB/s        13.1 MB/s
+    
+    ? (Gumstix)       2GB       ?         3.2 MB/s        9.7 MB/s
+
 Procedure
 ====
 
@@ -73,22 +89,6 @@ What we need to know is if the card can stream the MB it boasts or not.
 
 **NOTE**: Due to caching, the speeds appear slightly faster than they really are.
 If you just test with a small amount of data - 40MB, for example - you'll see that quite profoundly.
-
-Results
-====
-
-Write and Read speeds are with booting from NAND/microSDHC
-
-    Manufacturer      Size      Class     Write Speed     Read Speed
-    ------------      ----      -----     -----------     ----------
-    
-    KingMax           8GB       10        4.7 MB/s        14.1 MB/s
-    
-    Kingston          16GB      4         4.9 MB/s        12.6 MB/s
-
-    SanDisk           16GB      2         3.1 MB/s        13.1 MB/s
-    
-    ? (Gumstix)       2GB       ?         3.2 MB/s        9.7 MB/s
 
 Appendix
 ====
