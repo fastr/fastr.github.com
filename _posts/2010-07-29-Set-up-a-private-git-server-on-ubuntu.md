@@ -77,7 +77,7 @@ For each member of the project you must add their ssh key. If they were to have 
 The name of the file must match the name inside, with the .pub extension.
 
     cat ~/.ssh/id_rsa.pub
-    ssh-rsa AAAAB3N[..omitted..]zafWw== coolaj86@ubuntu-server    
+    ssh-rsa AAAAB3N[..omitted..]zafWw== dick@ubuntu-server    
 
 An automated version of the process
 

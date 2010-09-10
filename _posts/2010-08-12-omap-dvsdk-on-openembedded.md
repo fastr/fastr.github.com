@@ -541,12 +541,12 @@ Errors
 If you try to compile from the default overo kernel (or your haven't cleaned your previous attempt of ti-xzy) you're likely to run into these errors:
 
     bitbake ti-linuxutils
-      |   CC [M]  /home/coolaj86/overo-oe/tmp/work/overo-angstrom-linux-gnueabi/ti-linuxutils-1_2_25_01_06-r80c/linuxutils_2_25_01_06/packages/ti/sdo/linuxutils/cmem/src/module/cmemk.o
-      | /home/coolaj86/overo-oe/tmp/work/overo-angstrom-linux-gnueabi/ti-linuxutils-1_2_25_01_06-r80c/linuxutils_2_25_01_06/packages/ti/sdo/linuxutils/cmem/src/module/cmemk.c:65:2: warning: #warning *** not a warning *** Note: LINUX_VERSION_CODE >= 2.6.26
-      | /home/coolaj86/overo-oe/tmp/work/overo-angstrom-linux-gnueabi/ti-linuxutils-1_2_25_01_06-r80c/linuxutils_2_25_01_06/packages/ti/sdo/linuxutils/cmem/src/module/cmemk.c: In function 'ioctl':
-      | /home/coolaj86/overo-oe/tmp/work/overo-angstrom-linux-gnueabi/ti-linuxutils-1_2_25_01_06-r80c/linuxutils_2_25_01_06/packages/ti/sdo/linuxutils/cmem/src/module/cmemk.c:1530: error: implicit declaration of function 'dmac_clean_range'
-      | /home/coolaj86/overo-oe/tmp/work/overo-angstrom-linux-gnueabi/ti-linuxutils-1_2_25_01_06-r80c/linuxutils_2_25_01_06/packages/ti/sdo/linuxutils/cmem/src/module/cmemk.c:1541: error: implicit declaration of function 'dmac_inv_range'
-      | make[4]: *** [/home/coolaj86/overo-oe/tmp/work/overo-angstrom-linux-gnueabi/ti-linuxutils-1_2_25_01_06-r80c/linuxutils_2_25_01_06/packages/ti/sdo/linuxutils/cmem/src/module/cmemk.o] Error 1
+      |   CC [M]  /home/tom/overo-oe/tmp/work/overo-angstrom-linux-gnueabi/ti-linuxutils-1_2_25_01_06-r80c/linuxutils_2_25_01_06/packages/ti/sdo/linuxutils/cmem/src/module/cmemk.o
+      | /home/tom/overo-oe/tmp/work/overo-angstrom-linux-gnueabi/ti-linuxutils-1_2_25_01_06-r80c/linuxutils_2_25_01_06/packages/ti/sdo/linuxutils/cmem/src/module/cmemk.c:65:2: warning: #warning *** not a warning *** Note: LINUX_VERSION_CODE >= 2.6.26
+      | /home/tom/overo-oe/tmp/work/overo-angstrom-linux-gnueabi/ti-linuxutils-1_2_25_01_06-r80c/linuxutils_2_25_01_06/packages/ti/sdo/linuxutils/cmem/src/module/cmemk.c: In function 'ioctl':
+      | /home/tom/overo-oe/tmp/work/overo-angstrom-linux-gnueabi/ti-linuxutils-1_2_25_01_06-r80c/linuxutils_2_25_01_06/packages/ti/sdo/linuxutils/cmem/src/module/cmemk.c:1530: error: implicit declaration of function 'dmac_clean_range'
+      | /home/tom/overo-oe/tmp/work/overo-angstrom-linux-gnueabi/ti-linuxutils-1_2_25_01_06-r80c/linuxutils_2_25_01_06/packages/ti/sdo/linuxutils/cmem/src/module/cmemk.c:1541: error: implicit declaration of function 'dmac_inv_range'
+      | make[4]: *** [/home/tom/overo-oe/tmp/work/overo-angstrom-linux-gnueabi/ti-linuxutils-1_2_25_01_06-r80c/linuxutils_2_25_01_06/packages/ti/sdo/linuxutils/cmem/src/module/cmemk.o] Error 1
 
 
 According to the [e2e forum](http://e2e.ti.com/support/dsp/omap_applications_processors/f/447/p/46875/165433.aspx) it's possible to [patch](http://git.igep.es/?p=pub/scm/linux-omap-2.6.git;a=commit;h=ccbcd5d0a831a406dc01ba85f014fb8443ee79b5) the kernel (essentially adding a `http://` entry to the `linux-omap3_2.6.33.bb` (which has been removed, btw).

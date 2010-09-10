@@ -36,7 +36,7 @@ There are quite a few variables here - more than just the card to install to.
 `/usr/local/bin/install-overo-image-to-sdhc.env`:
 
     # About the host system
-    USER=coolaj86
+    USER=harry
     HOST=192.168.1.20
     PORT=22
     export SCP_HOST="-P ${PORT} ${USER}@${HOST}"

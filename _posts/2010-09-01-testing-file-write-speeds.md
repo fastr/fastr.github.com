@@ -14,13 +14,15 @@ Determine if write bottlenecks are due to the Overo's data bus, or the microSDHC
 Results
 ====
 
-Write and Read speeds are with booting from NAND/microSDHC
+Write and Read speeds are with booting from NAND
 
     Manufacturer      Size      Class     Write Speed     Read Speed
     ------------      ----      -----     -----------     ----------
     
     KingMax           8GB       10        4.7 MB/s        14.1 MB/s
     
+    Kingston          16GB      10        4.9 MB/s        13.2 MB/s
+
     Kingston          16GB      4         4.9 MB/s        12.6 MB/s
 
     SanDisk           16GB      2         3.1 MB/s        13.1 MB/s
@@ -31,6 +33,8 @@ Procedure
 ====
 
 I would like to try both configurations of booting from the NAND and booting from the microSDHC.
+
+**NOTE**: The results above are only from booting the NAND.
 
 Booting from the NAND
 ----
@@ -70,6 +74,10 @@ What we need to know is if the card can stream the MB it boasts or not.
     # Emulate a continuous stream of data
     sync
     MMC=/media/mmcblk0p1
+    #NOTE: This fills the cache buffers with data 
+    cat /dev/shm/rand.dd /dev/shm/rand.dd | dd of=${MMC}/rand.dd
+
+    # The overhead of the un`sync`d data above will make this more accurate
     cat /dev/shm/rand.dd /dev/shm/rand.dd /dev/shm/rand.dd \
       /dev/shm/rand.dd /dev/shm/rand.dd /dev/shm/rand.dd /dev/shm/rand.dd \
       /dev/shm/rand.dd /dev/shm/rand.dd /dev/shm/rand.dd /dev/shm/rand.dd \
