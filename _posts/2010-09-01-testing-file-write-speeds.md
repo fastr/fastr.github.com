@@ -14,20 +14,32 @@ Determine if write bottlenecks are due to the Overo's data bus, or the microSDHC
 Results
 ====
 
-Write and Read speeds are with booting from NAND
+Write and Read speeds are with booting from NAND.
 
-    Manufacturer      Size      Class     Write Speed     Read Speed
-    ------------      ----      -----     -----------     ----------
-    
-    KingMax           8GB       10        4.7 MB/s        14.1 MB/s
-    
-    Kingston          16GB      10        4.9 MB/s        13.2 MB/s
+TODO try `jfs` and `ext4`
 
-    Kingston          16GB      4         4.9 MB/s        12.6 MB/s
-
-    SanDisk           16GB      2         3.1 MB/s        13.1 MB/s
+    Manufacturer      Size      Class     Write Speed     Read Speed    Filesystem
+    ------------      ----      -----     -----------     ----------    ----------
     
-    ? (Gumstix)       2GB       ?         3.2 MB/s        9.7 MB/s
+    KingMax           8GB       10        4.7 MB/s        14.1 MB/s     ext3,defaults
+
+    Kingston          16GB      10        4.9 MB/s        13.2 MB/s     ext3,defaults
+    
+    Kingston          16GB      10        2.8 MB/s        13.5 MB/s     **ext2**,defaults
+
+    Kingston          16GB      4         4.9 MB/s        12.6 MB/s     ext3,defaults
+
+    SanDisk           16GB      2         3.1 MB/s        13.1 MB/s     ext3,defaults
+    
+    ? (Gumstix)       2GB       ?         3.2 MB/s        9.7 MB/s      ext3,defaults
+
+Comparison: regular desktop with Kingston Multi-reader USB 2.0
+
+    Kingston          16GB      10        5.3 MB/s        137.0 MB/s    **ext4**,defaults
+
+    Kingston          16GB      10        3.3 MB/s        36.0 MB/s     ext3,defaults
+
+    Kingston          16GB      10        5.5 MB/s        91.2 MB/s     **ext2**,defaults
 
 Procedure
 ====
