@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 995e643d-fa91-4ea3-a735-b614361ab50c
 title: Documenting with Jekyll
 categories: meta-documentation
 updated_at: 2010-08-02

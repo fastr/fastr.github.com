@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 14f9e805-5b0b-4465-9aa2-fa1582ea9e89
 title: Checking ISP registers
 categories: isp-ccdc
 updated_at: 2010-08-03

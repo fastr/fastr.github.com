@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 8c1fcee3-3fd1-4604-bb65-4641c5675f30
 title: Sharing project files with a team using ACLs on Ubuntu
 categories: unfinished ubuntu team
 updated_at: 2010-07-29

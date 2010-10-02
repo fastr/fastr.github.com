@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: d1db1dbc-e754-49a8-95cd-9427044d3622
 title: create file system image with tar
 categories: utility
 updated_at: 2010-09-16

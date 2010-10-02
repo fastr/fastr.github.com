@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: bcf26b05-5980-465f-95bc-12f07f0859cf
 title: Export gpio pins on gumstix
 categories: gpio gumstix
 updated_at: 2010-08-03

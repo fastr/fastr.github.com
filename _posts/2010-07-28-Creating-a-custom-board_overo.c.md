@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: b3796d5a-d8a1-4844-a832-ba7637839892
 title: Creating a custom board_overo.c
 categories: gumstix embedded
 updated_at: 2010-07-28

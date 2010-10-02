@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 04fc75ea-6a4a-474f-b726-e0910265d897
 title: IP Address Basics
 categories: network
 updated_at: 2010-07-30

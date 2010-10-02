@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: efc224a6-4244-4a02-a3d3-dd55fea13a5e
 title: Troubleshooting bitbake
 categories: bitbake
 updated_at: 2010-08-14

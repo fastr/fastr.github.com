@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 3fb131b1-aa15-4416-8c65-5f0bed38da05
 title: bitbake libv8 - v8 on OpenEmbedded
 categories: v8 scons
 updated_at: 2010-08-14

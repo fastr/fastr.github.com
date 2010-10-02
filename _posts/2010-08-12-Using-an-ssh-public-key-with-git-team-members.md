@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: e8946dd4-a990-447f-b286-08fa68512d06
 title: Using an ssh public key with git team members
 categories: ssh team git
 updated_at: 2010-08-12

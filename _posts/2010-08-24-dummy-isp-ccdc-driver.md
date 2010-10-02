@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: bd9293da-0c26-48c7-9b9d-fafd3f856121
 title: dummy isp ccdc driver
 categories: unfinished isp-ccdc
 updated_at: 2010-08-24

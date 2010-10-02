@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 1f20236e-1442-4b17-b2b5-a99bc3d020e5
 title: CCDC hs vs as output via u-boot
 categories: u-boot isp-ccdc
 updated_at: 2010-08-12

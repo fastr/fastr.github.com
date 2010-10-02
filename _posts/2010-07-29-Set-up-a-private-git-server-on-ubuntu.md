@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 3aef21e2-3f6f-485b-bc5e-b6abcfdba4fc
 title: Set up a private git server on ubuntu
 categories: git team
 updated_at: 2010-07-29

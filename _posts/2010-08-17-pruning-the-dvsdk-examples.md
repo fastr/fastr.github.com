@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 06331941-0c74-4f1f-94f1-5448c597fb49
 title: pruning the dvsdk examples
 categories: unfinished dvsdk
 updated_at: 2010-08-17

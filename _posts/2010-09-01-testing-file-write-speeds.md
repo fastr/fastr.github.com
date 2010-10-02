@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 3a3172d5-2abe-4d40-93cf-80f0c67e0d22
 title: testing file write speeds
 categories: uncategorized unfinished
 updated_at: 2010-09-01

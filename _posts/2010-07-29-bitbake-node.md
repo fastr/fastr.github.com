@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 58d8a53c-50f8-4cd9-88c9-55a612bc042b
 title: bitbake node - Node.js on OpenEmbedded
 categories: nodejs bitbake
 updated_at: 2010-08-14

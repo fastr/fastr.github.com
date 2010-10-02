@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: b44c0c6b-20c6-4617-aae8-bc3f14a8ddd4
 title: Exploring ISP and CCDC
 categories: isp-ccdc omap
 updated_at: 2010-08-05

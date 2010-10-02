@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: b288f536-6909-401a-ac88-ae456277015c
 title: refactor with bash
 categories: util
 updated_at: 2010-08-17

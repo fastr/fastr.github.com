@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 0a7d5249-48d1-45cc-9a94-a7b34f95973f
 title: Shifting registers (the double carrot operator)
 categories: c embedded
 updated_at: 2010-08-05

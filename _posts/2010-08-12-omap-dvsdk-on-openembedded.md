@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 84b8580f-72e8-4104-8d45-1b12bf761afa
 title: Installing OMAP DVSDK on Gumstix Overo
 categories: unfinished dvsdk
 updated_at: 2010-08-16

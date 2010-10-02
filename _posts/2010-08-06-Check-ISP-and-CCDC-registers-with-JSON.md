@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 87a71b76-cdc2-4047-92e1-c15863709a95
 title: Check isp and ccdc registers with json
 categories: isp-ccdc
 updated_at: 2010-08-09

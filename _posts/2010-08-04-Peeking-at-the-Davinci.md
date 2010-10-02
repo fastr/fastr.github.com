@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: fd2c0516-36d9-475b-b58b-39c2fba95d44
 title: Peeking at the Davinci
 categories: isp-ccdc davinci
 updated_at: 2010-08-04

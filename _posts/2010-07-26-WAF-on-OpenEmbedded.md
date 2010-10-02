@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: cb4afc80-aba1-4022-bd68-4d4ff268385d
 title: WAF on OpenEmbedded
 categories: waf bitbake
 updated_at: 2010-07-26

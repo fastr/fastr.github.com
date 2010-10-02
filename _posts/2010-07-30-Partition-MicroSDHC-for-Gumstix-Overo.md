@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 95c7730b-8e43-4116-bf2f-ed70123173de
 title: Partition MicroSDHC for Gumstix Overo
 categories: u-boot gumstix
 updated_at: 2010-08-19

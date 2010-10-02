@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 0104f58c-dbd5-430e-8925-e0e0990747f0
 title: Setting up Wifi on Gumstix Overo Fire
 categories: gumstix
 updated_at: 2010-09-01

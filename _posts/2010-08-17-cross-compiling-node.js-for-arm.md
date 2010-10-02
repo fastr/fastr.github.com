@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 11ee108b-5bc6-4e64-a577-8a36acdd545a
 title: cross compiling node.js for arm
 categories: nodejs
 updated_at: 2010-08-17

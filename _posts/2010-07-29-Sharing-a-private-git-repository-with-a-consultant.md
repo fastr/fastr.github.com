@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: aedce44f-7ca4-4288-87d6-72102a2350c1
 title: Sharing a private git repository with a consultant
 categories: git team consultant
 updated_at: 2010-07-29

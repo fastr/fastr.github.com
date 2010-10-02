@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: aee20b73-82c1-4a37-a788-edee98ff4fe8
 title: omap davinci linux cmem ddralg ddr2 dsplink
 categories: omap
 updated_at: 2010-08-23

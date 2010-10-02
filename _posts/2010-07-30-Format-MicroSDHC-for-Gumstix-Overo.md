@@ -1,5 +1,6 @@
 ---
 layout: article
+uuid: 5442639f-836e-4290-ad99-16bf1f9c2222
 title: Format MicroSDHC for Gumstix Overo
 categories: gumstix u-boot
 updated_at: 2010-07-30
