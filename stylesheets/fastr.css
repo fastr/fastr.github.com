@@ -1,6 +1,5 @@
 body {
-  background-color: #789;
-  background-image:url('images/ribbedbg.png');
+  background: #63a625 url(http://themes.googleusercontent.com/image?id=1M-C2rHwLzLDZGoh3qbWZ6sde9R5UC4jZcYt-QoyO1RyATwD6rQGlARx_UmuMWy_AlUTn) repeat fixed top center /* Credit: Nikada (http://www.istockphoto.com/googleimages.php?id=6072320&platform=blogger) */;
 }
 a {
   color: inherit;
