@@ -1,0 +1,1 @@
+../_posts/2010-08-12-Using-an-ssh-public-key-with-git-team-members.md

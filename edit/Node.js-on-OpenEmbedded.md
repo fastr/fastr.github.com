@@ -1,0 +1,1 @@
+../_posts/2010-07-26-Node.js-on-OpenEmbedded.md

@@ -1,0 +1,1 @@
+../_posts/2010-09-18-configure-bitbake-kernel.md

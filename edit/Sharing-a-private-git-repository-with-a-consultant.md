@@ -1,0 +1,1 @@
+../_posts/2010-07-29-Sharing-a-private-git-repository-with-a-consultant.md

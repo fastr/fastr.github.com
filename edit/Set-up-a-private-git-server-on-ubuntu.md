@@ -1,0 +1,1 @@
+../_posts/2010-07-29-Set-up-a-private-git-server-on-ubuntu.md

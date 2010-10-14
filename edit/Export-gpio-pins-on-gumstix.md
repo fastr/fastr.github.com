@@ -1,0 +1,1 @@
+../_posts/2010-08-03-Export-gpio-pins-on-gumstix.md

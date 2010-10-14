@@ -1,0 +1,1 @@
+../_posts/2010-08-17-refactor-with-bash.md

@@ -1,0 +1,1 @@
+../_posts/2010-08-12-omap-dvsdk-on-openembedded.md

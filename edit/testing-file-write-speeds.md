@@ -1,0 +1,1 @@
+../_posts/2010-09-01-testing-file-write-speeds.md

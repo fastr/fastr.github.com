@@ -1,0 +1,1 @@
+../_posts/2010-08-05-Shifting-registers-(the-double-carrot-operator).md

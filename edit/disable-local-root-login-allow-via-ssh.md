@@ -1,0 +1,1 @@
+../_posts/2010-10-11-disable-local-root-login-allow-via-ssh.md

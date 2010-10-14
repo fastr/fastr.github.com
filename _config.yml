@@ -2,4 +2,5 @@ destination: /var/www/ajs_secret_dir
 pygments: true
 markdown: rdiscount
 exclude: mkdocument
+lsi: false
 permalink: /articles/:title.html

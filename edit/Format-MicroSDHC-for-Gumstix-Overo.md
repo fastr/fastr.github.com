@@ -1,0 +1,1 @@
+../_posts/2010-07-30-Format-MicroSDHC-for-Gumstix-Overo.md

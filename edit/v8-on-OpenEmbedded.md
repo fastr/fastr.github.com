@@ -1,0 +1,1 @@
+../_posts/2010-07-29-v8-on-OpenEmbedded.md

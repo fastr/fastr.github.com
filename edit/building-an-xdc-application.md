@@ -1,0 +1,1 @@
+../_posts/2010-09-03-building-an-xdc-application.md
