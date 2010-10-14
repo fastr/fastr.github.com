@@ -4,3 +4,4 @@ markdown: rdiscount
 exclude: mkdocument
 lsi: false
 permalink: /articles/:title.html
+url_root: /
