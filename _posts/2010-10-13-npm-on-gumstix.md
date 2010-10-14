@@ -77,6 +77,8 @@ test
 
     module.exports = connect.createServer(function (req, res) {
       console.dir(req.headers);
+      res.writeHead(200);
+      res.end("check the console to see the browser headers logged");
     });
 
 `webapps/config.js`:
