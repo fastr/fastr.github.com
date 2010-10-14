@@ -12,21 +12,19 @@
       // Create a search control
       var searchControl = new google.search.SearchControl();
 
-      // Add in a full set of searchers
-      var localSearch = new google.search.LocalSearch();
-      searchControl.addSearcher(localSearch);
-      searchControl.addSearcher(new google.search.WebSearch());
-      searchControl.addSearcher(new google.search.VideoSearch());
-      searchControl.addSearcher(new google.search.BlogSearch());
-
-      // Set the Local Search center point
-      localSearch.setCenterPoint("New York, NY");
+      // site restricted web search with custom label
+      // and class suffix
+      var siteSearch = new google.search.WebSearch();
+      siteSearch.setUserDefinedLabel("Fastr Blog");
+      siteSearch.setUserDefinedClassSuffix("siteSearch");
+      siteSearch.setSiteRestriction("fastr.github.com");
+      searchControl.addSearcher(siteSearch);
 
       // Tell the searcher to draw itself and tell it where to attach
       searchControl.draw(document.getElementById("searchcontrol"));
 
       // Execute an inital search
-      searchControl.execute("Google");
+      searchControl.execute("gumstix");
     }
     google.setOnLoadCallback(OnLoad);
 
