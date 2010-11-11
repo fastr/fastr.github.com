@@ -79,12 +79,12 @@ Here's an example of what the values that should probably be chaged:
     * `DVSDK_INSTALL_DIR=$(HOME)/dvsdk/dvsdk_3_01_00_10`
     * `CODEGEN_INSTALL_DIR=/opt/TI/C6000CGT6.1.12`
     * `OMAP3503_SDK_INSTALL_DIR=$(HOME)/AM35x-OMAP35x-PSP-SDK-03.00.01.06`
-    * `CSTOOL_DIR=${OVEROTOP}/tmp/cross/armv7a`
+    * `CSTOOL_DIR=${OVEROTOP}/tmp/sysroots/i686-linux/usr/armv7a`
     * `CSTOOL_PREFIX=$(CSTOOL_DIR)/bin/arm-angstrom-linux-gnueabi-`
 
 Because some of the packages don't respect `CSTOOL_PREFIX` as they ought, also link the OpenEmbedded toolchain to `arm-none-linux-gnueabi-`
 
-    cd ${OVEROTOP}/tmp/cross/armv7a/bin
+    cd ${OVEROTOP}/tmp/sysroots/i686-linux/usr/armv7a/bin
     ls | cut -d'-' -f5-99 | while read COMP
     do
       ln -s arm-angstrom-linux-gnueabi-${COMP} arm-none-linux-gnueabi-${COMP} 
@@ -230,7 +230,7 @@ And these files:
     * `DVSDK_INSTALL_DIR=$(HOME)/dvsdk/dvsdk_3_01_00_10`
     * `CODEGEN_INSTALL_DIR=/opt/TI/C6000CGT6.1.12`
     * `OMAP3503_SDK_INSTALL_DIR=$(HOME)/AM35x-OMAP35x-PSP-SDK-03.00.01.06`
-    * `CSTOOL_DIR=${OVEROTOP}/tmp/cross/armv7a`
+    * `CSTOOL_DIR=${OVEROTOP}/tmp/sysroots/i686-linux/usr/armv7a`
     * `CSTOOL_PREFIX=$(CSTOOL_DIR)/bin/arm-angstrom-linux-gnueabi-`
   * uninstall
 
@@ -360,7 +360,7 @@ Set up a minimal set of env build variables
 
   kernel.env:
 
-    CROSS_DIR=~/overo-oe/tmp/cross/armv7a/bin
+    CROSS_DIR=~/overo-oe/tmp/sysroots/i686-linux/usr/armv7a/bin
     CROSS_PREFIX=arm-angstrom-linux-gnueabi-
     export ARCH=arm
     export CROSS_COMPILE=${CROSS_DIR}/${CROSS_PREFIX}
