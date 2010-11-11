@@ -390,7 +390,7 @@ Configure the kernel
 
       SYSROOTSDIR=${OETMP}/sysroots
       STAGEDIR=${SYSROOTSDIR}/`uname -m`-linux
-      CROSSBINDIR=${OETMP}/cross/armv7a/bin
+      CROSSBINDIR=${OETMP}/sysroots/i686-linux/usr/armv7a/bin
 
       export KERNELDIR=${SYSROOTSDIR}/${MACHINE}-angstrom-linux-gnueabi/kernel
 
