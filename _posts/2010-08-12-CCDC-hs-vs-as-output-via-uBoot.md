@@ -31,7 +31,8 @@ Make the changes you need:
     bitbake -c clean u-boot-omap3; bitbake -c configure u-boot-omap3
     VERSION=`bitbake --show-versions | grep 'u-boot-omap3\>' | cut -d':' -f2`
     UBOOTDIR=${OVEROTOP}/tmp/work/overo-angstrom-linux-gnueabi/u-boot-omap3-${VERSION}
-    cd ${UBOOTDIR}/git/board/overo
+    cd ${UBOOTDIR}
+    cd ./git/board/overo
     cp overo.h overo.h.orig
     vim overo.h # find `CAM_HS` and `CAM_VS` and change IEN (input enable) to IDIS (input disable)
 
